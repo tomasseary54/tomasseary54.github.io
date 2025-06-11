@@ -39,7 +39,7 @@
 </head>
 <body>
   <h1>CONTROLDLE</h1>
-  <p>v0.2.1</p>
+  <p>v0.2.1.1</p>
   <p id="clueText">Loading clue...</p>
 
   <canvas
@@ -154,26 +154,25 @@
       resultBox.textContent = `❌ Wrong - ${distance} miles away.`;
 
       function getDirection(fromLat, fromLon, toLat, toLon) {
-  const dLat = toLat - fromLat;
-  const dLon = toLon - fromLon;
+        const dLat = toLat - fromLat;
+        const dLon = toLon - fromLon;
 
-  if (Math.abs(dLat) < 0.1 && Math.abs(dLon) < 0.1) return '🎯';
+        if (Math.abs(dLat) < 0.1 && Math.abs(dLon) < 0.1) return '🎯';
 
-  if (dLat > 0) {
-    if (dLon > 0) return '↗️';
-    if (dLon < 0) return '↖️';
-    return '⬆️';
-  } else if (dLat < 0) {
-    if (dLon > 0) return '↘️';
-    if (dLon < 0) return '↙️';
-    return '⬇️';
-  } else {
-    if (dLon > 0) return '➡️';
-    if (dLon < 0) return '⬅️';
-    return '❓';
-  }
-}
-
+        if (dLat > 0) {
+            if (dLon > 0) return '↗️';
+            if (dLon < 0) return '↖️';
+            return '⬆️';
+        } else if (dLat < 0) {
+            if (dLon > 0) return '↘️';
+            if (dLon < 0) return '↙️';
+            return '⬇️';
+        } else {
+            if (dLon > 0) return '➡️';
+            if (dLon < 0) return '⬅️';
+            return '❓';
+        }
+        }
     }
   </script>
 </body>
