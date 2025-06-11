@@ -16,10 +16,19 @@
       margin: 1rem auto;
     }
 
-    input, button {
-      padding: 0.5rem;
-      font-size: 1rem;
+    .input-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
       margin-top: 1rem;
+    }
+
+    input[type="text"], button {
+      font-size: 1rem;
+      padding: 0.5rem;
+      width: 250px;
+      max-width: 90%;
     }
 
     #result {
@@ -30,14 +39,16 @@
 </head>
 <body>
   <h1>CONTROLDLE</h1>
-  <p>v0.1.4.5</p>
+  <p>v0.1.4.6</p>
   <p id="clueText">Loading clue...</p>
 
-  <!-- ✅ Fixed-size canvas -->
+  <!-- ✅ Fixed-size chart that will not follow the button -->
   <canvas id="compositionChart" width="300" height="300"></canvas>
 
-  <input type="text" id="guessInput" placeholder="Enter council name" />
-  <button onclick="checkGuess()">Submit</button>
+  <div class="input-wrapper">
+    <input type="text" id="guessInput" placeholder="Enter council name" />
+    <button onclick="checkGuess()">Submit</button>
+  </div>
 
   <div id="result"></div>
 
@@ -70,7 +81,7 @@
           },
           options: {
             responsive: true,
-            maintainAspectRatio: false, // ✅ allow canvas height to apply
+            maintainAspectRatio: false,
             plugins: {
               legend: {
                 position: 'top'
