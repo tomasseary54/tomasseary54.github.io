@@ -10,66 +10,53 @@
       margin: 2rem auto;
       text-align: center;
     }
-    input[type="text"] {
-      padding: 0.5rem;
+
+    .input-group {
       width: 60%;
+      margin: 1rem auto;
+      text-align: center;
+    }
+
+    .input-group input[type="text"] {
+      width: 65%;
+      padding: 0.5rem;
       font-size: 1rem;
     }
-    button {
+
+    .input-group button {
       padding: 0.5rem 1rem;
       font-size: 1rem;
       margin-left: 0.5rem;
     }
+
+    #compositionChart {
+      display: block;
+      width: 90%;
+      height: auto;
+      margin: 1.5rem auto 1rem;
+    }
+
     #result {
       margin-top: 1rem;
       font-weight: bold;
     }
-    canvas {
-      margin-top: 1.5rem;
-    }
-
-    .input-group {
-  width: 60%;
-  margin: 1rem auto;
-  text-align: center;
-}
-
-.input-group input[type="text"] {
-  width: 65%;
-  padding: 0.5rem;
-  font-size: 1rem;
-}
-
-.input-group button {
-  padding: 0.5rem 1rem;
-  font-size: 1rem;
-  margin-left: 0.5rem;
-}
-
-#compositionChart {
-  display: block;
-  width: 90%;
-  height: auto;
-  margin: 1rem auto;
-}
-
   </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-<div class="input-group">
+  <div class="input-group">
+    <h1>CONTROLDLE</h1>
+    <p>v0.1.3</p>
+    <p id="clueText">Loading clue...</p>
 
-  <h1>CONTROLDLE</h1>
-  <p>v0.1.2.6</p>
-  <p id="clueText">Loading clue...</p>
-  
-  <canvas id="compositionChart" style="width: 100%; height: auto;"></canvas>
-  
-  <input type="text" id="guessInput" placeholder="Enter council name" />
-  <button onclick="checkGuess()">Submit</button>
+    <canvas id="compositionChart"></canvas>
 
-  <div id="result"></div>
-</div>
+    <input type="text" id="guessInput" placeholder="Enter council name" />
+    <button onclick="checkGuess()">Submit</button>
+
+    <div id="result"></div>
+  </div>
+
   <script>
     let answer = null;
 
@@ -78,21 +65,37 @@
       .then(data => {
         const randomIndex = Math.floor(Math.random() * data.length);
         answer = data[randomIndex];
-        document.getElementById('clueText').textContent = `Composition: ${answer.composition}`;
 
-        const values = answer.composition.split(',').map(num => parseInt(num.trim()));
-        const chart = new Chart(document.getElementById('compositionChart'), {
+        // Prepare chart data
+        const labels = ['Conservative', 'Labour', 'Liberal Democrat', 'Green', 'Reform', 'SNP', 'Plaid', 'Other'];
+        const values = labels.map(party => answer[party]);
+
+        // Show composition textually
+        document.getElementById('clueText').textContent = 
+          `Composition: ${labels.map((label, i) => `${label} ${values[i]}`).join(', ')}`;
+
+        // Draw pie chart
+        new Chart(document.getElementById('compositionChart'), {
           type: 'pie',
           data: {
-            labels: ['Conservative', 'Labour', 'Liberal Democrat', 'Independent', 'Green', 'Reform', 'Other'],
+            labels: labels,
             datasets: [{
               data: values,
               backgroundColor: [
-                '#0087DC', '#E4003B', '#ffe119', '#DCDCDC', '#02A95B', '#12B6CF', '#DCDCDC'
+                '#0087DC', // Conservative
+                '#E4003B', // Labour
+                '#ffe119', // Liberal Democrat
+                '#02A95B', // Green
+                '#12B6CF', // Reform
+                '#FDF38E', // SNP
+                '#3F8428', // Plaid
+                '#DCDCDC'  // Other
               ]
             }]
           },
           options: {
+            responsive: true,
+            maintainAspectRatio: false,
             plugins: {
               legend: {
                 position: 'bottom'
@@ -115,7 +118,7 @@
         return;
       }
 
-      if (input === answer.council.toLowerCase()) {
+      if (input === answer.Council.toLowerCase()) {
         resultBox.textContent = "✅ Correct!";
       } else {
         resultBox.textContent = "❌ Try again.";
