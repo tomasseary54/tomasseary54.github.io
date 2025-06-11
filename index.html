@@ -27,10 +27,38 @@
     canvas {
       margin-top: 1.5rem;
     }
+
+    .input-group {
+  width: 60%;
+  margin: 1rem auto;
+  text-align: center;
+}
+
+.input-group input[type="text"] {
+  width: 65%;
+  padding: 0.5rem;
+  font-size: 1rem;
+}
+
+.input-group button {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  margin-left: 0.5rem;
+}
+
+#compositionChart {
+  display: block;
+  width: 90%;
+  height: auto;
+  margin: 1rem auto;
+}
+
   </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+<div class="input-group">
+
   <h1>CONTROLDLE</h1>
   <p>v0.1.2.3</p>
   <p id="clueText">Loading clue...</p>
@@ -41,7 +69,7 @@
   <button onclick="checkGuess()">Submit</button>
 
   <div id="result"></div>
-
+</div>
   <script>
     let answer = null;
 
