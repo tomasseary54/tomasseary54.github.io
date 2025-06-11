@@ -28,8 +28,8 @@
 </head>
 <body>
 
-  <h1>Guess the Council</h1>
-  <p>Type the name of the council you think was randomly selected.</p>
+  <h1>CONTROLDLE</h1>
+  <p id="clueText">Loading clue...</p>
 
   <input type="text" id="guessInput" placeholder="Enter council name" />
   <button onclick="checkGuess()">Submit</button>
@@ -49,6 +49,10 @@
       })
       .catch(err => {
         document.getElementById('result').textContent = "Error loading data.";
+        console.error(err);
+      })
+      .catch(err => {
+        document.getElementById('clueText').textContent = "Error loading data.";
         console.error(err);
       });
 
