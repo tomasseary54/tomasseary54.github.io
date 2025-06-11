@@ -1,11 +1,5 @@
 <!DOCTYPE html>
 <html>
-<body>
-<h1 style="text-align: center;">Hello World</h1>
-<p>I'm hosted with GitHub Pages.</p>
-<p>Does this work?</p>
-</body>
-
 <head>
   <meta charset="UTF-8">
   <title>Council Data</title>
@@ -26,6 +20,7 @@
   </style>
 </head>
 <body>
+  <h1 style="text-align: center;">Hello World</h1>
   <h1>Council Dataset</h1>
   <table id="councilTable">
     <thead>
@@ -33,7 +28,7 @@
         <th>Council</th>
         <th>Long</th>
         <th>Lat</th>
-        <th>composition</th>
+        <th>Composition</th>
       </tr>
     </thead>
     <tbody></tbody>
@@ -50,7 +45,7 @@
             <td>${entry.council}</td>
             <td>${entry.Long}</td>
             <td>${entry.Lat}</td>
-            <td>${entry.composition}</td>
+            <td>${entry.Composition}</td>
           `;
           tbody.appendChild(row);
         });
@@ -60,5 +55,4 @@
       });
   </script>
 </body>
-
 </html>
