@@ -60,7 +60,7 @@
 <div class="input-group">
 
   <h1>CONTROLDLE</h1>
-  <p>v0.1.2.5</p>
+  <p>v0.1.2.6</p>
   <p id="clueText">Loading clue...</p>
   
   <canvas id="compositionChart" style="width: 100%; height: auto;"></canvas>
@@ -84,11 +84,11 @@
         const chart = new Chart(document.getElementById('compositionChart'), {
           type: 'pie',
           data: {
-            labels: ['Lab', 'Con', 'LD', 'Ind', 'Green', 'Reform', 'Other'],
+            labels: ['Conservative', 'Labour', 'Liberal Democrat', 'Independent', 'Green', 'Reform', 'Other'],
             datasets: [{
               data: values,
               backgroundColor: [
-                '#e6194B', '#4363d8', '#ffe119', '#a9a9a9', '#3cb44b', '#f58231', '#911eb4'
+                '#4363d8', '#e6194B', '#ffe119', '#a9a9a9', '#3cb44b', '#f58231', '#911eb4'
               ]
             }]
           },
