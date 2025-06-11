@@ -57,4 +57,16 @@
       const resultBox = document.getElementById('result');
 
       if (!answer) {
-        resultBox.textContent = "Still
+        resultBox.textContent = "Still loading data...";
+        return;
+      }
+
+      if (input === answer) {
+        resultBox.textContent = "✅ Correct!";
+      } else {
+        resultBox.textContent = "❌ Try again.";
+      }
+    }
+  </script>
+</body>
+</html>
