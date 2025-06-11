@@ -39,10 +39,9 @@
 </head>
 <body>
   <h1>CONTROLDLE</h1>
-  <p>v0.1.5.0</p>
+  <p>v0.2.0</p>
   <p id="clueText">Loading clue...</p>
 
-  <!-- ✅ Fixed canvas size -->
   <canvas
     id="compositionChart"
     width="300"
@@ -51,10 +50,8 @@
   ></canvas>
 
   <div class="input-wrapper">
-    <!-- ✅ Input with autocomplete -->
     <input type="text" id="guessInput" placeholder="Enter council name" list="councilList" />
     <datalist id="councilList"></datalist>
-    
     <button onclick="checkGuess()">Submit</button>
   </div>
 
@@ -62,15 +59,32 @@
 
   <script>
     let answer = null;
+    let allCouncils = [];
+
+    // Haversine formula to compute distance in miles
+    function haversineDistance(lat1, lon1, lat2, lon2) {
+      const toRad = angle => angle * (Math.PI / 180);
+      const R = 3958.8; // Earth radius in miles
+
+      const dLat = toRad(lat2 - lat1);
+      const dLon = toRad(lon2 - lon1);
+      const a =
+        Math.sin(dLat / 2) ** 2 +
+        Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+        Math.sin(dLon / 2) ** 2;
+
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return R * c;
+    }
 
     fetch('councils.json')
       .then(res => res.json())
       .then(data => {
-        // ✅ Set today's answer
+        allCouncils = data;
         const randomIndex = Math.floor(Math.random() * data.length);
         answer = data[randomIndex];
 
-        // ✅ Populate datalist with council names
+        // Autocomplete
         const datalist = document.getElementById('councilList');
         data.forEach(entry => {
           const option = document.createElement('option');
@@ -78,14 +92,12 @@
           datalist.appendChild(option);
         });
 
-        // ✅ Prepare chart data
+        // Pie chart
         const parties = ['Conservative', 'Labour', 'Liberal Democrat', 'Green', 'Reform', 'SNP', 'Plaid', 'Other'];
         const values = parties.map(party => answer[party]);
-
         const compositionText = values.join(', ');
         document.getElementById('clueText').textContent = `Composition: ${compositionText}`;
 
-        // ✅ Draw pie chart
         new Chart(document.getElementById('compositionChart'), {
           type: 'pie',
           data: {
@@ -98,37 +110,4 @@
               ]
             }]
           },
-          options: {
-            responsive: false,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: {
-                position: 'top'
-              }
-            }
-          }
-        });
-      })
-      .catch(err => {
-        document.getElementById('clueText').textContent = "Error loading data.";
-        console.error(err);
-      });
-
-    function checkGuess() {
-      const input = document.getElementById('guessInput').value.trim().toLowerCase();
-      const resultBox = document.getElementById('result');
-
-      if (!answer) {
-        resultBox.textContent = "Still loading data...";
-        return;
-      }
-
-      if (input === answer.Council.toLowerCase()) {
-        resultBox.textContent = "✅ Correct!";
-      } else {
-        resultBox.textContent = "❌ Try again.";
-      }
-    }
-  </script>
-</body>
-</html>
+          o
