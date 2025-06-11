@@ -39,7 +39,7 @@
 </head>
 <body>
   <h1>CONTROLDLE</h1>
-  <p>v0.1.4.7</p>
+  <p>v0.1.5.0</p>
   <p id="clueText">Loading clue...</p>
 
   <!-- ✅ Fixed canvas size -->
@@ -51,7 +51,10 @@
   ></canvas>
 
   <div class="input-wrapper">
-    <input type="text" id="guessInput" placeholder="Enter council name" />
+    <!-- ✅ Input with autocomplete -->
+    <input type="text" id="guessInput" placeholder="Enter council name" list="councilList" />
+    <datalist id="councilList"></datalist>
+    
     <button onclick="checkGuess()">Submit</button>
   </div>
 
@@ -63,15 +66,26 @@
     fetch('councils.json')
       .then(res => res.json())
       .then(data => {
+        // ✅ Set today's answer
         const randomIndex = Math.floor(Math.random() * data.length);
         answer = data[randomIndex];
 
+        // ✅ Populate datalist with council names
+        const datalist = document.getElementById('councilList');
+        data.forEach(entry => {
+          const option = document.createElement('option');
+          option.value = entry.Council;
+          datalist.appendChild(option);
+        });
+
+        // ✅ Prepare chart data
         const parties = ['Conservative', 'Labour', 'Liberal Democrat', 'Green', 'Reform', 'SNP', 'Plaid', 'Other'];
         const values = parties.map(party => answer[party]);
 
         const compositionText = values.join(', ');
         document.getElementById('clueText').textContent = `Composition: ${compositionText}`;
 
+        // ✅ Draw pie chart
         new Chart(document.getElementById('compositionChart'), {
           type: 'pie',
           data: {
@@ -85,8 +99,8 @@
             }]
           },
           options: {
-            responsive: false,              // ✅ disables resizing
-            maintainAspectRatio: false,    // ✅ allows fixed height
+            responsive: false,
+            maintainAspectRatio: false,
             plugins: {
               legend: {
                 position: 'top'
