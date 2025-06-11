@@ -3,12 +3,12 @@
     "council": "Leeds",
     "Long": -1.507360,
     "Lat": 53.822701,
-    "composition": "14, 60, 6, 11, 6, 1, 1",
+    "composition": "14, 60, 6, 11, 6, 1, 1"
   },
   {
-    "answer": "Bradford",
+    "council": "Bradford",
     "Long": -1.873890,
     "Lat": 53.843800,
-    "composition": "13, 47, 5, 15, 10, 1, 0",
+    "composition": "13, 47, 5, 15, 10, 1, 0"
   }
 ]
