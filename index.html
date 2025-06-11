@@ -39,11 +39,16 @@
 </head>
 <body>
   <h1>CONTROLDLE</h1>
-  <p>v0.1.4.6</p>
+  <p>v0.1.4.7</p>
   <p id="clueText">Loading clue...</p>
 
-  <!-- ✅ Fixed-size chart that will not follow the button -->
-  <canvas id="compositionChart" width="300" height="300"></canvas>
+  <!-- ✅ Fixed canvas size -->
+  <canvas
+    id="compositionChart"
+    width="300"
+    height="300"
+    style="width: 300px; height: 300px;"
+  ></canvas>
 
   <div class="input-wrapper">
     <input type="text" id="guessInput" placeholder="Enter council name" />
@@ -80,8 +85,8 @@
             }]
           },
           options: {
-            responsive: true,
-            maintainAspectRatio: false,
+            responsive: false,              // ✅ disables resizing
+            maintainAspectRatio: false,    // ✅ allows fixed height
             plugins: {
               legend: {
                 position: 'top'
