@@ -1,61 +1,60 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Council Data</title>
+  <title>Council Guessing Game</title>
   <style>
-    table {
-      border-collapse: collapse;
-      width: 100%;
-      margin-top: 1rem;
+    body {
+      font-family: sans-serif;
+      max-width: 600px;
+      margin: 2rem auto;
+      text-align: center;
     }
-    th, td {
-      border: 1px solid #999;
+    input[type="text"] {
       padding: 0.5rem;
-      text-align: left;
+      width: 60%;
+      font-size: 1rem;
     }
-    th {
-      background: #f0f0f0;
+    button {
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      margin-left: 0.5rem;
+    }
+    #result {
+      margin-top: 1rem;
+      font-weight: bold;
     }
   </style>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 </head>
 <body>
-  <h1 style="text-align: center;">Hello World</h1>
-  <h1>Council Dataset</h1>
-  <table id="councilTable">
-    <thead>
-      <tr>
-        <th>Council</th>
-        <th>Long</th>
-        <th>Lat</th>
-        <th>Composition</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+
+  <h1>Guess the Council</h1>
+  <p>Type the name of the council you think was randomly selected.</p>
+
+  <input type="text" id="guessInput" placeholder="Enter council name" />
+  <button onclick="checkGuess()">Submit</button>
+
+  <div id="result"></div>
 
   <script>
+    let answer = null;
+
     fetch('councils.json')
       .then(res => res.json())
       .then(data => {
-        const tbody = document.querySelector('#councilTable tbody');
-        data.forEach(entry => {
-          const row = document.createElement('tr');
-          row.innerHTML = `
-            <td>${entry.council}</td>
-            <td>${entry.Long}</td>
-            <td>${entry.Lat}</td>
-            <td>${entry.composition}</td>
-          `;
-          tbody.appendChild(row);
-        });
+        const randomIndex = Math.floor(Math.random() * data.length);
+        answer = data[randomIndex].council.toLowerCase();
+        // Uncomment below to debug
+        // console.log("Answer is:", answer);
       })
       .catch(err => {
-        console.error('Failed to load JSON:', err);
+        document.getElementById('result').textContent = "Error loading data.";
+        console.error(err);
       });
-  </script>
-</body>
-</html>
+
+    function checkGuess() {
+      const input = document.getElementById('guessInput').value.trim().toLowerCase();
+      const resultBox = document.getElementById('result');
+
+      if (!answer) {
+        resultBox.textContent = "Still
