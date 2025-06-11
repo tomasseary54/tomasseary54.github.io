@@ -24,7 +24,11 @@
       margin-top: 1rem;
       font-weight: bold;
     }
+    canvas {
+      margin-top: 1.5rem;
+    }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <h1>CONTROLDLE</h1>
@@ -36,6 +40,9 @@
 
   <div id="result"></div>
 
+  <!-- ✅ Chart placeholder -->
+  <canvas id="compositionChart" width="400" height="400"></canvas>
+
   <script>
     let answer = null;
 
@@ -43,8 +50,29 @@
       .then(res => res.json())
       .then(data => {
         const randomIndex = Math.floor(Math.random() * data.length);
-        answer = data[randomIndex]; // store full object
+        answer = data[randomIndex];
         document.getElementById('clueText').textContent = `Composition: ${answer.composition}`;
+
+        const values = answer.composition.split(',').map(num => parseInt(num.trim()));
+        const chart = new Chart(document.getElementById('compositionChart'), {
+          type: 'pie',
+          data: {
+            labels: ['Lab', 'Con', 'LD', 'Ind', 'Green', 'Reform', 'Other'],
+            datasets: [{
+              data: values,
+              backgroundColor: [
+                '#e6194B', '#4363d8', '#ffe119', '#a9a9a9', '#3cb44b', '#f58231', '#911eb4'
+              ]
+            }]
+          },
+          options: {
+            plugins: {
+              legend: {
+                position: 'bottom'
+              }
+            }
+          }
+        });
       })
       .catch(err => {
         document.getElementById('clueText').textContent = "Error loading data.";
