@@ -3,59 +3,41 @@
 <head>
   <meta charset="UTF-8">
   <title>Controldle</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body {
       font-family: sans-serif;
-      max-width: 600px;
-      margin: 2rem auto;
       text-align: center;
+      margin: 2rem;
     }
-
-    .input-group {
-      width: 60%;
+    canvas {
+      width: 300px;
+      height: 300px;
       margin: 1rem auto;
-      text-align: center;
+      display: block;
     }
-
-    .input-group input[type="text"] {
-      width: 65%;
+    input, button {
       padding: 0.5rem;
       font-size: 1rem;
+      margin-top: 1rem;
     }
-
-    .input-group button {
-      padding: 0.5rem 1rem;
-      font-size: 1rem;
-      margin-left: 0.5rem;
-    }
-
-    #compositionChart {
-      display: block;
-      width: 90%;
-      margin: 1.5rem auto 1rem;
-      height: auto;
-    }
-
     #result {
       margin-top: 1rem;
       font-weight: bold;
     }
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <div class="input-group">
-    <h1>CONTROLDLE</h1>
-    <p>v0.1.4.4</p>
-    <p id="clueText">Loading clue...</p>
+  <h1>CONTROLDLE</h1>
+  <p>v0.1.5.0</p>
+  <p id="clueText">Loading clue...</p>
 
-    <canvas id="compositionChart"></canvas>
+  <canvas id="compositionChart"></canvas>
 
-    <input type="text" id="guessInput" placeholder="Enter council name" />
-    <button onclick="checkGuess()">Submit</button>
+  <input type="text" id="guessInput" placeholder="Enter council name" />
+  <button onclick="checkGuess()">Submit</button>
 
-    <div id="result"></div>
-  </div>
+  <div id="result"></div>
 
   <script>
     let answer = null;
@@ -67,40 +49,37 @@
         answer = data[randomIndex];
 
         const parties = ['Conservative', 'Labour', 'Liberal Democrat', 'Green', 'Reform', 'SNP', 'Plaid', 'Other'];
-        
         const values = parties.map(party => answer[party]);
-        
         const compositionText = values.join(', ');
         document.getElementById('clueText').textContent = `Composition: ${compositionText}`;
 
         new Chart(document.getElementById('compositionChart'), {
-  type: 'pie',
-  data: {
-    labels: parties,
-    datasets: [{
-      data: values,
-      backgroundColor: [
-        '#0087DC', '#E4003B', '#ffe119', '#02A95B',
-        '#12B6CF', '#FDF38E', '#3F8428', '#DCDCDC'
-      ]
-    }]
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        position: 'top'
-      }
-    }
-  }
-});
-
-})
-.catch(err => {
-  document.getElementById('clueText').textContent = "Error loading data.";
-  console.error(err);
-});
+          type: 'pie',
+          data: {
+            labels: parties,
+            datasets: [{
+              data: values,
+              backgroundColor: [
+                '#0087DC', '#E4003B', '#ffe119', '#02A95B',
+                '#12B6CF', '#FDF38E', '#3F8428', '#DCDCDC'
+              ]
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: 'top'
+              }
+            }
+          }
+        });
+      })
+      .catch(err => {
+        document.getElementById('clueText').textContent = "Error loading data.";
+        console.error(err);
+      });
 
     function checkGuess() {
       const input = document.getElementById('guessInput').value.trim().toLowerCase();
