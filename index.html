@@ -66,44 +66,21 @@
         const randomIndex = Math.floor(Math.random() * data.length);
         answer = data[randomIndex];
 
-        // List of parties to extract
         const parties = ['Conservative', 'Labour', 'Liberal Democrat', 'Green', 'Reform', 'SNP', 'Plaid', 'Other'];
         
-        // Get numbers as array
         const values = parties.map(party => answer[party]);
         
-        // Join into single string (like old `composition`)
         const compositionText = values.join(', ');
         document.getElementById('clueText').textContent = `Composition: ${compositionText}`;
 
         // Draw pie chart using combined values
-        new Chart(document.getElementById('compositionChart'), {
-          type: 'pie',
-          data: {
-            labels: parties,
-            datasets: [{
-              data: values,
-              backgroundColor: [
-                '#0087DC', '#E4003B', '#ffe119', '#02A95B',
-                '#12B6CF', '#FDF38E', '#3F8428', '#DCDCDC'
-              ]
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: {
-                position: 'bottom'
-              }
-            }
-          }
-        });
-      })
-      .catch(err => {
-        document.getElementById('clueText').textContent = "Error loading data.";
-        console.error(err);
-      });
+        options: {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: {} // defaults to top
+  }
+}
 
     function checkGuess() {
       const input = document.getElementById('guessInput').value.trim().toLowerCase();
