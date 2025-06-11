@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Council Guessing Game</title>
+  <title>Controldle</title>
   <style>
     body {
       font-family: sans-serif;
@@ -28,7 +28,7 @@
 </head>
 <body>
   <h1>CONTROLDLE</h1>
-  <body text-align: center>v0.1</body>
+  <p>v0.1</p>
   <p id="clueText">Loading clue...</p>
 
   <input type="text" id="guessInput" placeholder="Enter council name" />
@@ -43,13 +43,8 @@
       .then(res => res.json())
       .then(data => {
         const randomIndex = Math.floor(Math.random() * data.length);
-        answer = data[randomIndex].council.toLowerCase();
-        // Uncomment below to debug
-        // console.log("Answer is:", answer);
-      })
-      .catch(err => {
-        document.getElementById('result').textContent = "Error loading data.";
-        console.error(err);
+        answer = data[randomIndex]; // store full object
+        document.getElementById('clueText').textContent = `Composition: ${answer.composition}`;
       })
       .catch(err => {
         document.getElementById('clueText').textContent = "Error loading data.";
@@ -65,7 +60,7 @@
         return;
       }
 
-      if (input === answer) {
+      if (input === answer.council.toLowerCase()) {
         resultBox.textContent = "✅ Correct!";
       } else {
         resultBox.textContent = "❌ Try again.";
