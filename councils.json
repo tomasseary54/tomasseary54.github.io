@@ -4807,4 +4807,19 @@
     "Plaid": 0,
     "Other": 9,
     "Long": -2.23494,
-    
+    "Lat": 52.3853
+  },
+  {
+    "Council": "York",
+    "Conservative": 3,
+    "Labour": 24,
+    "Liberal Democrat": 19,
+    "Green": 0,
+    "Reform": 0,
+    "SNP": 0,
+    "Plaid": 0,
+    "Other": 1,
+    "Long": -1.07376,
+    "Lat": 53.9658
+  }
+]
