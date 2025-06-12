@@ -174,7 +174,7 @@
       const distance = haversineDistance(
         guessed.Lat, guessed.Long,
         answer.Lat, answer.Long
-      ).toFixed(1);
+      ).toFixed(0);
 
       const direction = getDirection(guessed.Lat, guessed.Long, answer.Lat, answer.Long);
 
