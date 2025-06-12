@@ -39,7 +39,7 @@
 </head>
 <body>
   <h1>CONTROLDLE</h1>
-  <p>v0.2.1.8</p>
+  <p>v0.2.2</p>
   <p id="clueText">Loading clue...</p>
 
   <canvas
@@ -140,7 +140,10 @@
         return;
       }
 
-      const guessed = allCouncils.find(entry => entry.Council.toLowerCase() === input);
+const formattedInput = input.charAt(0).toUpperCase() + input.slice(1);
+const correctLine = document.createElement('div');
+correctLine.innerHTML = `✅ <strong>${formattedInput}</strong> – Correct!`;
+resultBox.appendChild(correctLine);
       if (!guessed) {
         resultBox.textContent = "❌ Error 404 no council found.";
         return;
@@ -151,7 +154,13 @@
         answer.Lat, answer.Long
       ).toFixed(1);
 
-      resultBox.innerHTML = `❌ Wrong - ${distance} miles away.<br>${input}`;
+      const direction = getDirection(guessed.Lat, guessed.Long, answer.Lat, answer.Long);
+const formattedInput = input.charAt(0).toUpperCase() + input.slice(1);
+
+const newLine = document.createElement('div');
+newLine.innerHTML = `❌ <strong>${formattedInput}</strong> – ${distance} miles away ${direction}`;
+resultBox.appendChild(newLine);
+
 
       function getDirection(fromLat, fromLon, toLat, toLon) {
         const dLat = toLat - fromLat;
