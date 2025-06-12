@@ -41,7 +41,7 @@
 </head>
 <body>
   <h1>CONTROLDLE</h1>
-  <p>v0.2.2.4</p>
+  <p>v0.3</p>
   <p id="clueText">Loading clue...</p>
 
   <canvas
@@ -78,7 +78,7 @@
       return R * c;
     }
 
-    function getDirection(fromLat, fromLon, toLat, toLon) {
+    function Direction(fromLat, fromLon, toLat, toLon) {
   const toRad = angle => angle * Math.PI / 180;
   const toDeg = rad => rad * 180 / Math.PI;
 
@@ -89,20 +89,19 @@
   const y = Math.sin(dLon) * Math.cos(lat2);
   const x = Math.cos(lat1) * Math.sin(lat2) -
             Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
-  let bearing = toDeg(Math.atan2(y, x));
-  bearing = (bearing + 360) % 360; // Normalize
+  let angle = toDeg(Math.atan2(y, x));
+  angle = (angle + 360) % 360;
 
-  // Use compass direction arrows based on angle
-  if (bearing >= 337.5 || bearing < 22.5) return '⬆️';
-  if (bearing >= 22.5 && bearing < 67.5) return '↗️';
-  if (bearing >= 67.5 && bearing < 112.5) return '➡️';
-  if (bearing >= 112.5 && bearing < 157.5) return '↘️';
-  if (bearing >= 157.5 && bearing < 202.5) return '⬇️';
-  if (bearing >= 202.5 && bearing < 247.5) return '↙️';
-  if (bearing >= 247.5 && bearing < 292.5) return '⬅️';
-  if (bearing >= 292.5 && bearing < 337.5) return '↖️';
+  if (angle >= 337.5 || angle < 22.5) return '⬆️';
+  if (angle >= 22.5 && angle < 67.5) return '↗️';
+  if (angle >= 67.5 && angle < 112.5) return '➡️';
+  if (angle >= 112.5 && angle < 157.5) return '↘️';
+  if (angle >= 157.5 && angle < 202.5) return '⬇️';
+  if (angle >= 202.5 && angle < 247.5) return '↙️';
+  if (angle >= 247.5 && angle < 292.5) return '⬅️';
+  if (angle >= 292.5 && angle < 337.5) return '↖️';
 
-  return '❓';
+  return 'Error 404 no angle found.';
 }
 
 
