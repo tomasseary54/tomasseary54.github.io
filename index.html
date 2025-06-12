@@ -39,7 +39,7 @@
 </head>
 <body>
   <h1>CONTROLDLE</h1>
-  <p>v0.2.1.6</p>
+  <p>v0.2.1.7</p>
   <p id="clueText">Loading clue...</p>
 
   <canvas
@@ -151,7 +151,7 @@
         answer.Lat, answer.Long
       ).toFixed(1);
 
-      resultBox.textContent = `❌ Wrong - ${distance} miles away.\n${input}`;
+      resultBox.textContent = `❌ Wrong - ${distance} miles away.<br>${input}`;
 
       function getDirection(fromLat, fromLon, toLat, toLon) {
         const dLat = toLat - fromLat;
