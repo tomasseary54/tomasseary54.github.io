@@ -61,10 +61,9 @@
     let answer = null;
     let allCouncils = [];
 
-    // Haversine formula to compute distance in miles
     function haversineDistance(lat1, lon1, lat2, lon2) {
       const toRad = angle => angle * (Math.PI / 180);
-      const R = 3958.8; // Earth radius in miles
+      const R = 3958.8; // miles
 
       const dLat = toRad(lat2 - lat1);
       const dLon = toRad(lon2 - lon1);
@@ -77,6 +76,27 @@
       return R * c;
     }
 
+    function getDirection(fromLat, fromLon, toLat, toLon) {
+      const dLat = toLat - fromLat;
+      const dLon = toLon - fromLon;
+
+      if (Math.abs(dLat) < 0.1 && Math.abs(dLon) < 0.1) return '🎯';
+
+      if (dLat > 0) {
+        if (dLon > 0) return '↗️';
+        if (dLon < 0) return '↖️';
+        return '⬆️';
+      } else if (dLat < 0) {
+        if (dLon > 0) return '↘️';
+        if (dLon < 0) return '↙️';
+        return '⬇️';
+      } else {
+        if (dLon > 0) return '➡️';
+        if (dLon < 0) return '⬅️';
+        return '❓';
+      }
+    }
+
     fetch('councils.json')
       .then(res => res.json())
       .then(data => {
@@ -84,7 +104,6 @@
         const randomIndex = Math.floor(Math.random() * data.length);
         answer = data[randomIndex];
 
-        // Autocomplete
         const datalist = document.getElementById('councilList');
         data.forEach(entry => {
           const option = document.createElement('option');
@@ -92,7 +111,6 @@
           datalist.appendChild(option);
         });
 
-        // Pie chart
         const parties = ['Conservative', 'Labour', 'Liberal Democrat', 'Green', 'Reform', 'SNP', 'Plaid', 'Other'];
         const values = parties.map(party => answer[party]);
         const compositionText = values.join(', ');
@@ -129,6 +147,7 @@
     function checkGuess() {
       const input = document.getElementById('guessInput').value.trim().toLowerCase();
       const resultBox = document.getElementById('result');
+      const formattedInput = input.charAt(0).toUpperCase() + input.slice(1);
 
       if (!answer) {
         resultBox.textContent = "Still loading data...";
@@ -136,16 +155,17 @@
       }
 
       if (input === answer.Council.toLowerCase()) {
-        resultBox.textContent = "✅ Correct!";
+        const correctLine = document.createElement('div');
+        correctLine.innerHTML = `✅ <strong>${formattedInput}</strong> – Correct!`;
+        resultBox.appendChild(correctLine);
         return;
       }
 
-const formattedInput = input.charAt(0).toUpperCase() + input.slice(1);
-const correctLine = document.createElement('div');
-correctLine.innerHTML = `✅ <strong>${formattedInput}</strong> – Correct!`;
-resultBox.appendChild(correctLine);
+      const guessed = allCouncils.find(entry => entry.Council.toLowerCase() === input);
       if (!guessed) {
-        resultBox.textContent = "❌ Error 404 no council found.";
+        const notFoundLine = document.createElement('div');
+        notFoundLine.innerHTML = `❌ <strong>${formattedInput}</strong> – Not found.`;
+        resultBox.appendChild(notFoundLine);
         return;
       }
 
@@ -155,33 +175,10 @@ resultBox.appendChild(correctLine);
       ).toFixed(1);
 
       const direction = getDirection(guessed.Lat, guessed.Long, answer.Lat, answer.Long);
-const formattedInput = input.charAt(0).toUpperCase() + input.slice(1);
 
-const newLine = document.createElement('div');
-newLine.innerHTML = `❌ <strong>${formattedInput}</strong> – ${distance} miles away ${direction}`;
-resultBox.appendChild(newLine);
-
-
-      function getDirection(fromLat, fromLon, toLat, toLon) {
-        const dLat = toLat - fromLat;
-        const dLon = toLon - fromLon;
-
-        if (Math.abs(dLat) < 0.1 && Math.abs(dLon) < 0.1) return '🎯';
-
-        if (dLat > 0) {
-            if (dLon > 0) return '↗️';
-            if (dLon < 0) return '↖️';
-            return '⬆️';
-        } else if (dLat < 0) {
-            if (dLon > 0) return '↘️';
-            if (dLon < 0) return '↙️';
-            return '⬇️';
-        } else {
-            if (dLon > 0) return '➡️';
-            if (dLon < 0) return '⬅️';
-            return '❓';
-        }
-        }
+      const newLine = document.createElement('div');
+      newLine.innerHTML = `❌ <strong>${formattedInput}</strong> – ${distance} miles away ${direction}`;
+      resultBox.appendChild(newLine);
     }
   </script>
 </body>
