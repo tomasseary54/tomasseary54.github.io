@@ -79,25 +79,32 @@
     }
 
     function getDirection(fromLat, fromLon, toLat, toLon) {
-      const dLat = toLat - fromLat;
-      const dLon = toLon - fromLon;
+  const toRad = angle => angle * Math.PI / 180;
+  const toDeg = rad => rad * 180 / Math.PI;
 
-      if (Math.abs(dLat) < 0.1 && Math.abs(dLon) < 0.1) return '🎯';
+  const dLon = toRad(toLon - fromLon);
+  const lat1 = toRad(fromLat);
+  const lat2 = toRad(toLat);
 
-      if (dLat > 0) {
-        if (dLon > 0) return '↗️';
-        if (dLon < 0) return '↖️';
-        return '⬆️';
-      } else if (dLat < 0) {
-        if (dLon > 0) return '↘️';
-        if (dLon < 0) return '↙️';
-        return '⬇️';
-      } else {
-        if (dLon > 0) return '➡️';
-        if (dLon < 0) return '⬅️';
-        return '❓';
-      }
-    }
+  const y = Math.sin(dLon) * Math.cos(lat2);
+  const x = Math.cos(lat1) * Math.sin(lat2) -
+            Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
+  let bearing = toDeg(Math.atan2(y, x));
+  bearing = (bearing + 360) % 360; // Normalize
+
+  // Use compass direction arrows based on angle
+  if (bearing >= 337.5 || bearing < 22.5) return '⬆️';
+  if (bearing >= 22.5 && bearing < 67.5) return '↗️';
+  if (bearing >= 67.5 && bearing < 112.5) return '➡️';
+  if (bearing >= 112.5 && bearing < 157.5) return '↘️';
+  if (bearing >= 157.5 && bearing < 202.5) return '⬇️';
+  if (bearing >= 202.5 && bearing < 247.5) return '↙️';
+  if (bearing >= 247.5 && bearing < 292.5) return '⬅️';
+  if (bearing >= 292.5 && bearing < 337.5) return '↖️';
+
+  return '❓';
+}
+
 
     fetch('councils.json')
       .then(res => res.json())
@@ -159,29 +166,4 @@
       if (input === answer.Council.toLowerCase()) {
         const correctLine = document.createElement('div');
         correctLine.innerHTML = `✅ <strong>${formattedInput}</strong> – Correct!`;
-        resultBox.appendChild(correctLine);
-        return;
-      }
-
-      const guessed = allCouncils.find(entry => entry.Council.toLowerCase() === input);
-      if (!guessed) {
-        const notFoundLine = document.createElement('div');
-        notFoundLine.innerHTML = `❌ <strong>${formattedInput}</strong> – Not found.`;
-        resultBox.appendChild(notFoundLine);
-        return;
-      }
-
-      const distance = haversineDistance(
-        guessed.Lat, guessed.Long,
-        answer.Lat, answer.Long
-      ).toFixed(0);
-
-      const direction = getDirection(guessed.Lat, guessed.Long, answer.Lat, answer.Long);
-
-      const newLine = document.createElement('div');
-      newLine.innerHTML = `❌ <strong>${formattedInput}</strong> – ${distance} miles away ${direction}`;
-      resultBox.appendChild(newLine);
-    }
-  </script>
-</body>
-</html>
+  

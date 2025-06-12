@@ -477,8 +477,8 @@
     "SNP": 0,
     "Plaid": 0,
     "Other": 0,
-    "Long": "",
-    "Lat": ""
+    "Long": 51.459,
+    "Lat": 2.592
   },
   {
     "Council": "Broadland",
@@ -633,8 +633,8 @@
     "SNP": 0,
     "Plaid": 0,
     "Other": 2,
-    "Long": "",
-    "Lat": ""
+    "Long": 52.2130,
+    "Lat": 0.1141
   },
   {
     "Council": "Camden",
@@ -1062,8 +1062,8 @@
     "SNP": 0,
     "Plaid": 0,
     "Other": 2,
-    "Long": "",
-    "Lat": ""
+    "Long": 53.1422,
+    "Lat": 1.5514
   },
   {
     "Council": "Derbyshire Dales",
@@ -1088,8 +1088,8 @@
     "SNP": 0,
     "Plaid": 0,
     "Other": 2,
-    "Long": "",
-    "Lat": ""
+    "Long": 50.7146,
+    "Lat": 3.5175
   },
   {
     "Council": "Doncaster",
@@ -1179,8 +1179,8 @@
     "SNP": 0,
     "Plaid": 0,
     "Other": 11,
-    "Long": "",
-    "Lat": ""
+    "Long": 54.7859,
+    "Lat": 1.5850
   },
   {
     "Council": "Ealing",
@@ -1361,8 +1361,8 @@
     "SNP": 0,
     "Plaid": 0,
     "Other": 5,
-    "Long": "",
-    "Lat": ""
+    "Long": 50.52186,
+    "Lat": 0.036
   },
   {
     "Council": "Eastbourne",
@@ -1400,8 +1400,8 @@
     "SNP": 17,
     "Plaid": 0,
     "Other": 2,
-    "Long": "",
-    "Lat": ""
+    "Long": 55.9492,
+    "Lat": 3.1922
   },
   {
     "Council": "Elmbridge",
@@ -1478,8 +1478,8 @@
     "SNP": 0,
     "Plaid": 0,
     "Other": 9,
-    "Long": "",
-    "Lat": ""
+    "Long": 51.7347,
+    "Lat": 0.4704
   },
   {
     "Council": "Exeter",
@@ -1660,8 +1660,8 @@
     "SNP": 0,
     "Plaid": 0,
     "Other": 1,
-    "Long": "",
-    "Lat": ""
+    "Long": 51.8664,
+    "Lat": 2.2486
   },
   {
     "Council": "Gosport",
@@ -1790,8 +1790,8 @@
     "SNP": 0,
     "Plaid": 0,
     "Other": 5,
-    "Long": "",
-    "Lat": ""
+    "Long": 51.0349,
+    "Lat": 1.1910
   },
   {
     "Council": "Harborough",
@@ -1920,8 +1920,8 @@
     "SNP": 0,
     "Plaid": 0,
     "Other": 11,
-    "Long": "",
-    "Lat": ""
+    "Long": 52.05609
+    "Lat": 2.7129
   },
   {
     "Council": "Hertfordshire",
@@ -1933,8 +1933,8 @@
     "SNP": 0,
     "Plaid": 0,
     "Other": 1,
-    "Long": "",
-    "Lat": ""
+    "Long": 51.7908,
+    "Lat": 0.0813
   },
   {
     "Council": "Hertsmere",
@@ -2154,8 +2154,8 @@
     "SNP": 0,
     "Plaid": 0,
     "Other": 1,
-    "Long": "",
-    "Lat": ""
+    "Long": 51.2785,
+    "Lat": 0.5221
   },
   {
     "Council": "King's Lynn and West Norfolk",
@@ -2180,8 +2180,8 @@
     "SNP": 0,
     "Plaid": 0,
     "Other": 3,
-    "Long": "",
-    "Lat": ""
+    "Long": 53.767750,
+    "Lat": -0.335827
   },
   {
     "Council": "Kingston upon Thames",
@@ -2245,8 +2245,8 @@
     "SNP": 0,
     "Plaid": 0,
     "Other": 9,
-    "Long": "",
-    "Lat": ""
+    "Long": 53.7575,
+    "Lat": 2.7091
   },
   {
     "Council": "Lancaster",
@@ -2297,8 +2297,8 @@
     "SNP": 0,
     "Plaid": 0,
     "Other": 1,
-    "Long": "",
-    "Lat": ""
+    "Long": 52.6552,
+    "Lat": 1.1892
   },
   {
     "Council": "Lewes",
@@ -2362,8 +2362,8 @@
     "SNP": 0,
     "Plaid": 0,
     "Other": 4,
-    "Long": "",
-    "Lat": ""
+    "Long": 53.2313,
+    "Lat": 0.5457
   },
   {
     "Council": "Liverpool",
@@ -2739,8 +2739,8 @@
     "SNP": 0,
     "Plaid": 0,
     "Other": 6,
-    "Long": "",
-    "Lat": ""
+    "Long": 52.6150,
+    "Lat": 1.3073
   },
   {
     "Council": "North Ayrshire",
@@ -2986,8 +2986,8 @@
     "SNP": 0,
     "Plaid": 0,
     "Other": 3,
-    "Long": "",
-    "Lat": ""
+    "Long": 52.9364,
+    "Lat": 1.1358
   },
   {
     "Council": "Nuneaton and Bedworth",
@@ -3064,8 +3064,8 @@
     "SNP": 0,
     "Plaid": 0,
     "Other": 3,
-    "Long": "",
-    "Lat": ""
+    "Long": 51.7518,
+    "Lat": 1.2618
   },
   {
     "Council": "Pembrokeshire",
@@ -3831,8 +3831,8 @@
     "SNP": 0,
     "Plaid": 0,
     "Other": 1,
-    "Long": "",
-    "Lat": ""
+    "Long": 52.8069,
+    "Lat": 2.1161
   },
   {
     "Council": "Staffordshire Moorlands",
@@ -3948,8 +3948,8 @@
     "SNP": 0,
     "Plaid": 0,
     "Other": 3,
-    "Long": "",
-    "Lat": ""
+    "Long": 52.054045,
+    "Lat": 1.143447
   },
   {
     "Council": "Sunderland",
@@ -3974,8 +3974,8 @@
     "SNP": 0,
     "Plaid": 0,
     "Other": 17,
-    "Long": "",
-    "Lat": ""
+    "Long": 51.2277,
+    "Lat": 0.1997
   },
   {
     "Council": "Surrey Heath",
@@ -4403,8 +4403,8 @@
     "SNP": 0,
     "Plaid": 0,
     "Other": 2,
-    "Long": "",
-    "Lat": ""
+    "Long": 52.2829,
+    "Lat": 1.5891
   },
   {
     "Council": "Watford",
@@ -4585,8 +4585,8 @@
     "SNP": 0,
     "Plaid": 0,
     "Other": 4,
-    "Long": "",
-    "Lat": ""
+    "Long": 50.8379,
+    "Lat": 0.7828
   },
   {
     "Council": "Westminster",
@@ -4741,8 +4741,8 @@
     "SNP": 0,
     "Plaid": 0,
     "Other": 2,
-    "Long": "",
-    "Lat": ""
+    "Long": 52.1855,
+    "Lat": 2.1838
   },
   {
     "Council": "Worthing",
