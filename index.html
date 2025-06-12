@@ -151,7 +151,7 @@
         answer.Lat, answer.Long
       ).toFixed(1);
 
-      resultBox.textContent = `❌ Wrong - ${distance} miles away.<br>${input}`;
+      resultBox.innerHTML = `❌ Wrong - ${distance} miles away.<br>${input}`;
 
       function getDirection(fromLat, fromLon, toLat, toLon) {
         const dLat = toLat - fromLat;
