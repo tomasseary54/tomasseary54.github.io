@@ -110,4 +110,70 @@
               ]
             }]
           },
-         
+          options: {
+            responsive: false,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: 'top'
+              }
+            }
+          }
+        });
+      })
+      .catch(err => {
+        document.getElementById('clueText').textContent = "Error loading data.";
+        console.error(err);
+      });
+
+    function checkGuess() {
+      const input = document.getElementById('guessInput').value.trim().toLowerCase();
+      const resultBox = document.getElementById('result');
+
+      if (!answer) {
+        resultBox.textContent = "Still loading data...";
+        return;
+      }
+
+      if (input === answer.Council.toLowerCase()) {
+        resultBox.textContent = "✅ Correct!";
+        return;
+      }
+
+      const guessed = allCouncils.find(entry => entry.Council.toLowerCase() === input);
+      if (!guessed) {
+        resultBox.textContent = "❌ Error 404 no council found.";
+        return;
+      }
+
+      const distance = haversineDistance(
+        guessed.Lat, guessed.Long,
+        answer.Lat, answer.Long
+      ).toFixed(1);
+
+      resultBox.textContent = `❌ Wrong - ${distance} miles away.`;
+
+      function getDirection(fromLat, fromLon, toLat, toLon) {
+        const dLat = toLat - fromLat;
+        const dLon = toLon - fromLon;
+
+        if (Math.abs(dLat) < 0.1 && Math.abs(dLon) < 0.1) return '🎯';
+
+        if (dLat > 0) {
+            if (dLon > 0) return '↗️';
+            if (dLon < 0) return '↖️';
+            return '⬆️';
+        } else if (dLat < 0) {
+            if (dLon > 0) return '↘️';
+            if (dLon < 0) return '↙️';
+            return '⬇️';
+        } else {
+            if (dLon > 0) return '➡️';
+            if (dLon < 0) return '⬅️';
+            return '❓';
+        }
+        }
+    }
+  </script>
+</body>
+</html>
