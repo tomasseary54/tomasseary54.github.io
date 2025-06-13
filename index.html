@@ -17,14 +17,13 @@
     }
 
     .input-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  margin-top: 1rem;
-}
-
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
 
     input[type="text"], button {
       font-size: 1rem;
@@ -41,7 +40,7 @@
 </head>
 <body>
   <h1>CONTROLDLE</h1>
-  <p>v0.3.5.2</p>
+  <p>v0.3.5.3</p>
   <p id="clueText">Loading clue...</p>
 
   <canvas
@@ -62,48 +61,45 @@
   <script>
     let answer = null;
     let allCouncils = [];
+    let round = 0;
 
     function haversineDistance(lat1, lon1, lat2, lon2) {
       const toRad = angle => angle * (Math.PI / 180);
       const R = 3958.8; // miles
-
       const dLat = toRad(lat2 - lat1);
       const dLon = toRad(lon2 - lon1);
       const a =
         Math.sin(dLat / 2) ** 2 +
         Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
         Math.sin(dLon / 2) ** 2;
-
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
       return R * c;
     }
 
     function getDirection(fromLat, fromLon, toLat, toLon) {
-  const toRad = angle => angle * Math.PI / 180;
-  const toDeg = rad => rad * 180 / Math.PI;
+      const toRad = angle => angle * Math.PI / 180;
+      const toDeg = rad => rad * 180 / Math.PI;
 
-  const dLon = toRad(toLon - fromLon);
-  const lat1 = toRad(fromLat);
-  const lat2 = toRad(toLat);
+      const dLon = toRad(toLon - fromLon);
+      const lat1 = toRad(fromLat);
+      const lat2 = toRad(toLat);
 
-  const y = Math.sin(dLon) * Math.cos(lat2);
-  const x = Math.cos(lat1) * Math.sin(lat2) -
-            Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
-  let angle = toDeg(Math.atan2(y, x));
-  angle = (angle + 360) % 360;
+      const y = Math.sin(dLon) * Math.cos(lat2);
+      const x = Math.cos(lat1) * Math.sin(lat2) -
+                Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
+      let angle = toDeg(Math.atan2(y, x));
+      angle = (angle + 360) % 360;
 
-  if (angle >= 337.5 || angle < 22.5) return '⬆️';
-  if (angle >= 22.5 && angle < 67.5) return '↗️';
-  if (angle >= 67.5 && angle < 112.5) return '➡️';
-  if (angle >= 112.5 && angle < 157.5) return '↘️';
-  if (angle >= 157.5 && angle < 202.5) return '⬇️';
-  if (angle >= 202.5 && angle < 247.5) return '↙️';
-  if (angle >= 247.5 && angle < 292.5) return '⬅️';
-  if (angle >= 292.5 && angle < 337.5) return '↖️';
-
-  return 'Error 404 no angle found.';
-}
-
+      if (angle >= 337.5 || angle < 22.5) return '⬆️';
+      if (angle >= 22.5 && angle < 67.5) return '↗️';
+      if (angle >= 67.5 && angle < 112.5) return '➡️';
+      if (angle >= 112.5 && angle < 157.5) return '↘️';
+      if (angle >= 157.5 && angle < 202.5) return '⬇️';
+      if (angle >= 202.5 && angle < 247.5) return '↙️';
+      if (angle >= 247.5 && angle < 292.5) return '⬅️';
+      if (angle >= 292.5 && angle < 337.5) return '↖️';
+      return 'Error 404 no angle found.';
+    }
 
     fetch('councils.json')
       .then(res => res.json())
@@ -151,16 +147,16 @@
         document.getElementById('clueText').textContent = "Error loading data.";
         console.error(err);
       });
-
-    let round = 0;  
+      
     function checkGuess() {
+      const resultBox = document.getElementById('result');
       round += 1;
+
       const roundLine = document.createElement('div');
       roundLine.innerHTML = `<strong>Round ${round}</strong>`;
       resultBox.appendChild(roundLine);
 
       const input = document.getElementById('guessInput').value.trim().toLowerCase();
-      const resultBox = document.getElementById('result');
       const formattedInput = input.charAt(0).toUpperCase() + input.slice(1);
 
       if (!answer) {
