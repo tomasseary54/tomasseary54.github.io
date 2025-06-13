@@ -40,7 +40,7 @@
 </head>
 <body>
   <h1>CONTROLDLE</h1>
-  <p>v0.3.5.3</p>
+  <p>v0.3.5.4</p>
   <p id="clueText">Loading clue...</p>
 
   <canvas
@@ -147,49 +147,58 @@
         document.getElementById('clueText').textContent = "Error loading data.";
         console.error(err);
       });
-      
+
     function checkGuess() {
-      const resultBox = document.getElementById('result');
-      round += 1;
+  if (round >= 6) {
+    const resultBox = document.getElementById('result');
+    const limitLine = document.createElement('div');
+    limitLine.innerHTML = `🚫 GAME OVER. You've been Unitarised`;
+    resultBox.appendChild(limitLine);
+    return;
+  }
 
-      const roundLine = document.createElement('div');
-      roundLine.innerHTML = `<strong>Round ${round}</strong>`;
-      resultBox.appendChild(roundLine);
+  round += 1;
+  const resultBox = document.getElementById('result');
 
-      const input = document.getElementById('guessInput').value.trim().toLowerCase();
-      const formattedInput = input.charAt(0).toUpperCase() + input.slice(1);
+  const roundLine = document.createElement('div');
+  roundLine.innerHTML = `<strong>Round ${round}</strong>`;
+  resultBox.appendChild(roundLine);
 
-      if (!answer) {
-        resultBox.textContent = "Still loading data...";
-        return;
-      }
+  const input = document.getElementById('guessInput').value.trim().toLowerCase();
+  const formattedInput = input.charAt(0).toUpperCase() + input.slice(1);
 
-      if (input === answer.Council.toLowerCase()) {
-        const correctLine = document.createElement('div');
-        correctLine.innerHTML = `✅ <strong>${formattedInput}</strong> - Correct!`;
-        resultBox.appendChild(correctLine);
-        return;
-      }
+  if (!answer) {
+    resultBox.textContent = "Still loading data...";
+    return;
+  }
 
-      const guessed = allCouncils.find(entry => entry.Council.toLowerCase() === input);
-      if (!guessed) {
-        const notFoundLine = document.createElement('div');
-        notFoundLine.innerHTML = `❌ <strong>${formattedInput}</strong> - Not found.`;
-        resultBox.appendChild(notFoundLine);
-        return;
-      }
+  if (input === answer.Council.toLowerCase()) {
+    const correctLine = document.createElement('div');
+    correctLine.innerHTML = `✅ <strong>${formattedInput}</strong> – Correct!`;
+    resultBox.appendChild(correctLine);
+    return;
+  }
 
-      const distance = haversineDistance(
-        guessed.Lat, guessed.Long,
-        answer.Lat, answer.Long
-      ).toFixed(0);
+  const guessed = allCouncils.find(entry => entry.Council.toLowerCase() === input);
+  if (!guessed) {
+    const notFoundLine = document.createElement('div');
+    notFoundLine.innerHTML = `❌ <strong>${formattedInput}</strong> – Not found.`;
+    resultBox.appendChild(notFoundLine);
+    return;
+  }
 
-      const direction = getDirection(guessed.Lat, guessed.Long, answer.Lat, answer.Long);
+  const distance = haversineDistance(
+    guessed.Lat, guessed.Long,
+    answer.Lat, answer.Long
+  ).toFixed(0);
 
-      const newLine = document.createElement('div');
-      newLine.innerHTML = `❌ <strong>${formattedInput}</strong> - ${distance} miles away ${direction}`;
-      resultBox.appendChild(newLine);
-    }
+  const direction = getDirection(guessed.Lat, guessed.Long, answer.Lat, answer.Long);
+
+  const newLine = document.createElement('div');
+  newLine.innerHTML = `❌ <strong>${formattedInput}</strong> – ${distance} miles away ${direction}`;
+  resultBox.appendChild(newLine);
+}
+
   </script>
 </body>
 </html>
