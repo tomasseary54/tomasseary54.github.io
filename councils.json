@@ -1089,7 +1089,7 @@
     "Plaid": 0,
     "Other": 2,
     "Long": 50.7146,
-    "Lat": 3.5175
+    "Lat": -3.5175
   },
   {
     "Council": "Doncaster",
@@ -1921,7 +1921,7 @@
     "Plaid": 0,
     "Other": 11,
     "Long": 52.05609,
-    "Lat": 2.7129
+    "Lat": -2.7129
   },
   {
     "Council": "Hertfordshire",
@@ -2363,7 +2363,7 @@
     "Plaid": 0,
     "Other": 4,
     "Long": 53.2313,
-    "Lat": 0.5457
+    "Lat": -0.5457
   },
   {
     "Council": "Liverpool",
@@ -3832,7 +3832,7 @@
     "Plaid": 0,
     "Other": 1,
     "Long": 52.8069,
-    "Lat": 2.1161
+    "Lat": -2.1161
   },
   {
     "Council": "Staffordshire Moorlands",
