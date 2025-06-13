@@ -169,25 +169,4 @@
         return;
       }
 
-      const guessed = allCouncils.find(entry => entry.Council.toLowerCase() === input);
-      if (!guessed) {
-        const notFoundLine = document.createElement('div');
-        notFoundLine.innerHTML = `❌ <strong>${formattedInput}</strong> - Not found.`;
-        resultBox.appendChild(notFoundLine);
-        return;
-      }
-
-      const distance = haversineDistance(
-        guessed.Lat, guessed.Long,
-        answer.Lat, answer.Long
-      ).toFixed(0);
-
-      const direction = getDirection(guessed.Lat, guessed.Long, answer.Lat, answer.Long);
-
-      const newLine = document.createElement('div');
-      newLine.innerHTML = `❌ <strong>${formattedInput}</strong> - ${distance} miles away ${direction}`;
-      resultBox.appendChild(newLine);
-    }
-  </script>
-</body>
-</html>
+      const gue

@@ -1063,7 +1063,7 @@
     "Plaid": 0,
     "Other": 2,
     "Long": 53.1422,
-    "Lat": 1.5514
+    "Lat": -1.5514
   },
   {
     "Council": "Derbyshire Dales",
@@ -1361,8 +1361,8 @@
     "SNP": 0,
     "Plaid": 0,
     "Other": 5,
-    "Long": 50.52186,
-    "Lat": 0.036
+    "Long": 0.001000,
+    "Lat": 50.871833
   },
   {
     "Council": "Eastbourne",
@@ -1400,8 +1400,8 @@
     "SNP": 17,
     "Plaid": 0,
     "Other": 2,
-    "Long": 55.9492,
-    "Lat": 3.1922
+    "Long": 3.1922,
+    "Lat": 55.9492
   },
   {
     "Council": "Elmbridge",
@@ -1934,7 +1934,7 @@
     "Plaid": 0,
     "Other": 1,
     "Long": 51.7908,
-    "Lat": 0.0813
+    "Lat": -0.0813
   },
   {
     "Council": "Hertsmere",
