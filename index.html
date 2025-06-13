@@ -41,7 +41,7 @@
 </head>
 <body>
   <h1>CONTROLDLE</h1>
-  <p>v0.3.5.1</p>
+  <p>v0.3.5.2</p>
   <p id="clueText">Loading clue...</p>
 
   <canvas
@@ -154,8 +154,11 @@
 
     let round = 0;  
     function checkGuess() {
-      round += 1
-      resultBox.textContent = `Round: ${round}`;
+      round += 1;
+      const roundLine = document.createElement('div');
+      roundLine.innerHTML = `<strong>Round ${round}</strong>`;
+      resultBox.appendChild(roundLine);
+
       const input = document.getElementById('guessInput').value.trim().toLowerCase();
       const resultBox = document.getElementById('result');
       const formattedInput = input.charAt(0).toUpperCase() + input.slice(1);
