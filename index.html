@@ -40,8 +40,9 @@
 </head>
 <body>
   <h1>CONTROLDLE</h1>
-  <p>v0.3.5.6</p>
+  <p>v0.3.6</p>
   <p id="clueText">Loading clue...</p>
+  <p id="typeText">Loading type...</p>
 
   <canvas
     id="compositionChart"
@@ -120,7 +121,8 @@
         const values = parties.map(party => answer[party]);
         const compositionText = values.join(', ');
         document.getElementById('clueText').textContent = `Composition: ${compositionText}`;
-        document.getElementById('typeText').textContent = 'Type:' ${type};
+        document.getElementById('typeText').textContent = `Type: ${answer.Type}`;
+
 
         new Chart(document.getElementById('compositionChart'), {
           type: 'pie',
@@ -183,9 +185,6 @@
   const guessed = allCouncils.find(entry => entry.Council.toLowerCase() === input);
   if (!guessed) {
     const notFoundLine = document.createElement('div');
-    if (round >= 2){
-      typeLine.innerHTML = `<strong>${}</strong>`
-    }
     notFoundLine.innerHTML = `❌ <strong>${formattedInput}</strong> – Not found.`;
     resultBox.appendChild(notFoundLine);
     return;
