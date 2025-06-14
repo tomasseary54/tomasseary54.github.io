@@ -40,7 +40,7 @@
 </head>
 <body>
   <h1>CONTROLDLE</h1>
-  <p>v0.3.6.3</p>
+  <p>v0.4</p>
   <p id="clueText">Loading clue...</p>
 
   <canvas
@@ -117,7 +117,6 @@
         });
 
         const parties = ['Conservative', 'Labour', 'Liberal Democrat', 'Green', 'Reform', 'SNP', 'Plaid', 'Other'];
-        const type = ['Type']
         const values = parties.map(party => answer[party]);
         const compositionText = values.join(', ');
         document.getElementById('clueText').textContent = `Composition: ${compositionText}`;
@@ -140,7 +139,7 @@
               legend: {
                 position: 'top'
               }
-            
+            }
           }
         });
       })
@@ -150,16 +149,19 @@
       });
 
     function checkGuess() {
-  if (round >= 6) {
-    const resultBox = document.getElementById('result');
-    const limitLine = document.createElement('div');
-    limitLine.innerHTML = `🚫 GAME OVER. You've been Unitarised`;
-    resultBox.appendChild(limitLine);
-    return;
-  if (round >=2){
-    document.getElementById('typeText').textContent = `Type: ${answer.Type}`;
-    }
-  }
+      round += 1;
+
+      if (round === 2) {
+        document.getElementById('typeText').textContent = `Type: ${answer.Type}`;
+      }
+
+if (round > 6) {
+  const resultBox = document.getElementById('result');
+  const limitLine = document.createElement('div');
+  limitLine.innerHTML = `🚫 GAME OVER. You've been Unitarised`;
+  resultBox.appendChild(limitLine);
+  return;
+}
 
   round += 1;
   const resultBox = document.getElementById('result');
