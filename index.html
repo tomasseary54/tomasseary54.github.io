@@ -40,7 +40,7 @@
 </head>
 <body>
   <h1>CONTROLDLE</h1>
-  <p>v0.4</p>
+  <p>v0.4.1</p>
   <p id="clueText">Loading clue...</p>
 
   <canvas
@@ -155,15 +155,13 @@
         document.getElementById('typeText').textContent = `Type: ${answer.Type}`;
       }
 
-if (round > 6) {
-  const resultBox = document.getElementById('result');
-  const limitLine = document.createElement('div');
-  limitLine.innerHTML = `🚫 GAME OVER. You've been Unitarised`;
-  resultBox.appendChild(limitLine);
-  return;
+      if (round > 6) {
+        const resultBox = document.getElementById('result');
+        const limitLine = document.createElement('div');
+        limitLine.innerHTML = `🚫 GAME OVER. You've been Unitarised`;
+        resultBox.appendChild(limitLine);
+        return;
 }
-
-  round += 1;
   const resultBox = document.getElementById('result');
 
   const roundLine = document.createElement('div');
