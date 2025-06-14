@@ -40,7 +40,7 @@
 </head>
 <body>
   <h1>CONTROLDLE</h1>
-  <p>v0.3.5.5</p>
+  <p>v0.3.5.6</p>
   <p id="clueText">Loading clue...</p>
 
   <canvas
@@ -65,7 +65,7 @@
 
     function haversineDistance(lat1, lon1, lat2, lon2) {
       const toRad = angle => angle * (Math.PI / 180);
-      const R = 3958.8; // miles
+      const R = 3958.8;
       const dLat = toRad(lat2 - lat1);
       const dLon = toRad(lon2 - lon1);
       const a =
@@ -116,9 +116,11 @@
         });
 
         const parties = ['Conservative', 'Labour', 'Liberal Democrat', 'Green', 'Reform', 'SNP', 'Plaid', 'Other'];
+        const type = ['Type']
         const values = parties.map(party => answer[party]);
         const compositionText = values.join(', ');
         document.getElementById('clueText').textContent = `Composition: ${compositionText}`;
+        document.getElementById('typeText').textContent = 'Type:' ${type};
 
         new Chart(document.getElementById('compositionChart'), {
           type: 'pie',
@@ -127,8 +129,7 @@
             datasets: [{
               data: values,
               backgroundColor: [
-                '#0087DC', '#E4003B', '#FDBB30', '#02A95B',
-                '#12B6CF', '#FDF38E', '#3F8428', '#DCDCDC'
+                '#0087DC', '#E4003B', '#FDBB30', '#02A95B', '#12B6CF', '#FDF38E', '#3F8428', '#DCDCDC'
               ]
             }]
           },
@@ -182,6 +183,9 @@
   const guessed = allCouncils.find(entry => entry.Council.toLowerCase() === input);
   if (!guessed) {
     const notFoundLine = document.createElement('div');
+    if (round >= 2){
+      typeLine.innerHTML = `<strong>${}</strong>`
+    }
     notFoundLine.innerHTML = `❌ <strong>${formattedInput}</strong> – Not found.`;
     resultBox.appendChild(notFoundLine);
     return;
