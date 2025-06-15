@@ -2,14 +2,20 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
   <title>Controldle</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body {
-      font-family: sans-serif;
+      font-family: "Montserrat", sans-serif;
+      font-optical-sizing: auto;
+      font-weight: 400;
+      font-style: normal;
       text-align: center;
       margin: 1rem;
-    }
+  }
     canvas {
       display: block;
       margin: 1rem auto;
@@ -36,7 +42,7 @@
 </head>
 <body>
   <h1>CONTROLDLE</h1>
-  <p>v0.5.0</p>
+  <p>v0.5.1</p>
   <p id="controldleScoreHistory"></p>
   <p id="clueText">Loading clue...</p>
   <canvas id="compositionChart" width="300" height="300" style="width: 300px; height: 300px;"></canvas>
