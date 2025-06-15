@@ -10,12 +10,10 @@
       text-align: center;
       margin: 1rem;
     }
-
     canvas {
       display: block;
       margin: 1rem auto;
     }
-
     .input-wrapper {
       display: flex;
       flex-direction: column;
@@ -24,14 +22,12 @@
       gap: 0.5rem;
       margin-top: 1rem;
     }
-
     input[type="text"], button {
       font-size: 1rem;
       padding: 0.5rem;
       width: 250px;
       max-width: 90%;
     }
-
     #result {
       margin-top: 1rem;
       font-weight: bold;
@@ -40,25 +36,17 @@
 </head>
 <body>
   <h1>CONTROLDLE</h1>
-  <p>v0.4.2</p>
+  <p>v0.4.3</p>
+  <p id="controldleScoreHistory"></p>
   <p id="clueText">Loading clue...</p>
-
-  <canvas
-    id="compositionChart"
-    width="300"
-    height="300"
-    style="width: 300px; height: 300px;"
-  ></canvas>
+  <canvas id="compositionChart" width="300" height="300" style="width: 300px; height: 300px;"></canvas>
   <p id="typeText"></p>
-
   <div class="input-wrapper">
     <input type="text" id="guessInput" placeholder="Enter council name" list="councilList" />
     <datalist id="councilList"></datalist>
     <button onclick="checkGuess()">Submit</button>
   </div>
-
   <div id="result"></div>
-
   <script>
     let answer = null;
     let allCouncils = [];
@@ -80,17 +68,14 @@
     function getDirection(fromLat, fromLon, toLat, toLon) {
       const toRad = angle => angle * Math.PI / 180;
       const toDeg = rad => rad * 180 / Math.PI;
-
       const dLon = toRad(toLon - fromLon);
       const lat1 = toRad(fromLat);
       const lat2 = toRad(toLat);
-
       const y = Math.sin(dLon) * Math.cos(lat2);
       const x = Math.cos(lat1) * Math.sin(lat2) -
                 Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
       let angle = toDeg(Math.atan2(y, x));
       angle = (angle + 360) % 360;
-
       if (angle >= 337.5 || angle < 22.5) return '⬆️';
       if (angle >= 22.5 && angle < 67.5) return '↗️';
       if (angle >= 67.5 && angle < 112.5) return '➡️';
@@ -102,25 +87,33 @@
       return 'Error 404 no angle found.';
     }
 
+    function saveControldleScore(value) {
+      const scores = JSON.parse(localStorage.getItem('controldleScore')) || [];
+      scores.push(value);
+      localStorage.setItem('controldleScore', JSON.stringify(scores));
+      controldleScoreHistory();
+    }
+
+    function controldleScoreHistory() {
+      const scores = JSON.parse(localStorage.getItem('controldleScore')) || [];
+      document.getElementById('controldleScoreHistory').textContent = `Previous scores: ${scores.join(', ')}`;
+    }
+
     fetch('councils.json')
       .then(res => res.json())
       .then(data => {
         allCouncils = data;
         const randomIndex = Math.floor(Math.random() * data.length);
         answer = data[randomIndex];
-
         const datalist = document.getElementById('councilList');
         data.forEach(entry => {
           const option = document.createElement('option');
           option.value = entry.Council;
           datalist.appendChild(option);
         });
-
         const parties = ['Conservative', 'Labour', 'Liberal Democrat', 'Green', 'Reform', 'SNP', 'Plaid', 'Other'];
         const values = parties.map(party => answer[party]);
-        const compositionText = values.join(', ');
-        document.getElementById('clueText').textContent = `Composition: ${compositionText}`;
-
+        document.getElementById('clueText').textContent = `Composition: ${values.join(', ')}`;
         new Chart(document.getElementById('compositionChart'), {
           type: 'pie',
           data: {
@@ -128,7 +121,8 @@
             datasets: [{
               data: values,
               backgroundColor: [
-                '#0087DC', '#E4003B', '#FDBB30', '#02A95B', '#12B6CF', '#FDF38E', '#3F8428', '#DCDCDC'
+                '#0087DC', '#E4003B', '#FDBB30', '#02A95B',
+                '#12B6CF', '#FDF38E', '#3F8428', '#DCDCDC'
               ]
             }]
           },
@@ -136,12 +130,11 @@
             responsive: false,
             maintainAspectRatio: false,
             plugins: {
-              legend: {
-                position: 'top'
-              }
+              legend: { position: 'top' }
             }
           }
         });
+        controldleScoreHistory();
       })
       .catch(err => {
         document.getElementById('clueText').textContent = "Error loading data.";
@@ -150,62 +143,47 @@
 
     function checkGuess() {
       round += 1;
-
       if (round === 2) {
         document.getElementById('typeText').textContent = `Type: ${answer.Type}`;
       }
-
       if (round > 6) {
         const resultBox = document.getElementById('result');
         const limitLine = document.createElement('div');
         limitLine.innerHTML = `🚫 GAME OVER. You've been Unitarised`;
         resultBox.appendChild(limitLine);
+        saveControldleScore('X');
         return;
-}
-  const resultBox = document.getElementById('result');
-
-  const roundLine = document.createElement('div');
-  //roundLine.innerHTML = `<strong>Round ${round}</strong>`;//
-  resultBox.appendChild(roundLine);
-
-  const input = document.getElementById('guessInput').value.trim().toLowerCase();
-  const formattedInput = input.charAt(0).toUpperCase() + input.slice(1);
-
-  if (!answer) {
-    resultBox.textContent = "Still loading data...";
-    return;
-  }
-
-  if (input === answer.Council.toLowerCase()) {
-    const correctLine = document.createElement('div');
-    correctLine.innerHTML = `✅ <strong>${formattedInput}</strong> – Correct!`;
-    resultBox.appendChild(correctLine);
-    return;
-  }
-
-  const guessed = allCouncils.find(entry => entry.Council.toLowerCase() === input);
-  if (!guessed) {
-    const notFoundLine = document.createElement('div');
-    notFoundLine.innerHTML = `❌ <strong>${formattedInput}</strong> – Not found.`;
-    resultBox.appendChild(notFoundLine);
-    return;
-  }
-
-  const distance = haversineDistance(
-    guessed.Lat, guessed.Long,
-    answer.Lat, answer.Long
-  ).toFixed(0);
-
-  const direction = getDirection(guessed.Lat, guessed.Long, answer.Lat, answer.Long);
-
-  const newLine = document.createElement('div');
-  newLine.innerHTML = `❌ <strong>${formattedInput}</strong> – ${distance} miles away ${direction}`;
-  resultBox.appendChild(newLine);
-}
-
+      }
+      const resultBox = document.getElementById('result');
+      const input = document.getElementById('guessInput').value.trim().toLowerCase();
+      const formattedInput = input.charAt(0).toUpperCase() + input.slice(1);
+      if (!answer) {
+        resultBox.textContent = "Still loading data...";
+        return;
+      }
+      if (input === answer.Council.toLowerCase()) {
+        const correctLine = document.createElement('div');
+        correctLine.innerHTML = `✅ <strong>${formattedInput}</strong> – Correct!`;
+        resultBox.appendChild(correctLine);
+        saveControldleScore(round);
+        return;
+      }
+      const guessed = allCouncils.find(entry => entry.Council.toLowerCase() === input);
+      if (!guessed) {
+        const notFoundLine = document.createElement('div');
+        notFoundLine.innerHTML = `❌ <strong>${formattedInput}</strong> – Not found.`;
+        resultBox.appendChild(notFoundLine);
+        return;
+      }
+      const distance = haversineDistance(guessed.Lat, guessed.Long, answer.Lat, answer.Long).toFixed(0);
+      const direction = getDirection(guessed.Lat, guessed.Long, answer.Lat, answer.Long);
+      const newLine = document.createElement('div');
+      newLine.innerHTML = `❌ <strong>${formattedInput}</strong> – ${distance} miles away ${direction}`;
+      resultBox.appendChild(newLine);
+    }
   </script>
-<p>
-  Data sourced from <a href="https://opencouncildata.co.uk" target="_blank" rel="noopener">Open Council Data UK</a>, licensed under CC BY-SA 4.0.
-</p>
+  <p>
+    Data sourced from <a href="https://opencouncildata.co.uk" target="_blank" rel="noopener">Open Council Data UK</a>, licensed under CC BY-SA 4.0.
+  </p>
 </body>
 </html>
