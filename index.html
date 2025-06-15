@@ -42,10 +42,10 @@
 </head>
 <body>
   <h1>CONTROLDLE</h1>
-  <p>v0.5.1</p>
+  <p>v0.5.2</p>
   <p id="controldleScoreHistory"></p>
   <p id="clueText">Loading clue...</p>
-  <canvas id="compositionChart" width="300" height="300" style="width: 300px; height: 300px;"></canvas>
+  <canvas id="compositionChart" width=80% height=auto style="width: 300px; height: 300px;"></canvas>
   <p id="typeText"></p>
   <div class="input-wrapper">
     <input type="text" id="guessInput" placeholder="Enter council name" list="councilList" />
@@ -169,7 +169,7 @@
       }
       if (input === answer.Council.toLowerCase()) {
         const correctLine = document.createElement('div');
-        correctLine.innerHTML = `✅ <strong>${formattedInput}</strong> – Correct!`;
+        correctLine.innerHTML = `✅ <strong>${formattedInput}</strong> - Correct!`;
         resultBox.appendChild(correctLine);
         saveControldleScore(round);
         return;
@@ -177,14 +177,14 @@
       const guessed = allCouncils.find(entry => entry.Council.toLowerCase() === input);
       if (!guessed) {
         const notFoundLine = document.createElement('div');
-        notFoundLine.innerHTML = `❌ <strong>${formattedInput}</strong> – Not found.`;
+        notFoundLine.innerHTML = `❌ <strong>${formattedInput}</strong> - Not found.`;
         resultBox.appendChild(notFoundLine);
         return;
       }
       const distance = haversineDistance(guessed.Lat, guessed.Long, answer.Lat, answer.Long).toFixed(0);
       const direction = getDirection(guessed.Lat, guessed.Long, answer.Lat, answer.Long);
       const newLine = document.createElement('div');
-      newLine.innerHTML = `❌ <strong>${formattedInput}</strong> – ${distance} miles away ${direction}`;
+      newLine.innerHTML = `❌ <strong>${formattedInput}</strong> - ${distance} miles away ${direction}`;
       resultBox.appendChild(newLine);
     }
   </script>
