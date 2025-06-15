@@ -42,7 +42,7 @@
 </head>
 <body>
   <h1>CONTROLDLE</h1>
-  <p>v0.5.2.1</p>
+  <p>v0.5.2.2</p>
   <p id="controldleScoreHistory"></p>
   <p id="clueText">Loading clue...</p>
   <canvas id="compositionChart" width=80% height=auto style="width: 80%; height: auto;"></canvas>
@@ -121,25 +121,28 @@
         const values = parties.map(party => answer[party]);
         document.getElementById('clueText').textContent = `Composition: ${values.join(', ')}`;
         new Chart(document.getElementById('compositionChart'), {
-          type: 'pie',
-          data: {
-            labels: parties,
-            datasets: [{
-              data: values,
-              backgroundColor: [
-                '#0087DC', '#E4003B', '#FDBB30', '#02A95B',
-                '#12B6CF', '#FDF38E', '#3F8428', '#DCDCDC'
-              ]
-            }]
-          },
-          options: {
-            responsive: false,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: { position: 'top' }
-            }
-          }
-        });
+  type: 'pie',
+  data: {
+    labels: parties,
+    datasets: [{
+      data: values,
+      backgroundColor: [
+        '#0087DC', '#E4003B', '#FDBB30', '#02A95B',
+        '#12B6CF', '#FDF38E', '#3F8428', '#DCDCDC'
+      ]
+    }]
+  },
+  options: {
+    responsive: false,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: false
+      }
+    }
+  }
+});
+
         controldleScoreHistory();
       })
       .catch(err => {
