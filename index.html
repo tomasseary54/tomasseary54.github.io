@@ -2,29 +2,26 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
   <title>Controldle</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: "Montserrat", sans-serif;
-      font-optical-sizing: auto;
-      font-weight: 400;
-      font-style: normal;
+      font-family: 'Montserrat', sans-serif;
       text-align: center;
       margin: 1rem;
     }
     canvas {
       display: block;
       margin: 1rem auto;
+      max-width: 300px;
     }
     .input-wrapper {
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
       gap: 0.5rem;
       margin-top: 1rem;
       width: 70%;
@@ -45,10 +42,10 @@
 </head>
 <body>
   <h1>CONTROLDLE</h1>
-  <p>v0.5.3.3</p>
+  <p>v0.5.3.5</p>
   <p id="controldleScoreHistory"></p>
-  <canvas id="compositionChart" width="300" height="300" style="width: 20%; height: auto;"></canvas>
-    <p id="clueText"></p>
+  <canvas id="compositionChart" width="300" height="300"></canvas>
+  <p id="clueText">Loading clue...</p>
   <p id="typeText"></p>
 
   <div class="input-wrapper">
@@ -63,16 +60,18 @@
     let answer = null;
     let allCouncils = [];
     let round = 0;
+    let chart = null;
+
+    const parties = ['Conservative', 'Labour', 'Liberal Democrat', 'Green', 'Reform', 'SNP', 'Plaid', 'Other'];
 
     function haversineDistance(lat1, lon1, lat2, lon2) {
-      const toRad = angle => angle * (Math.PI / 180);
+      const toRad = deg => deg * (Math.PI / 180);
       const R = 3958.8;
       const dLat = toRad(lat2 - lat1);
       const dLon = toRad(lon2 - lon1);
-      const a =
-        Math.sin(dLat / 2) ** 2 +
-        Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
-        Math.sin(dLon / 2) ** 2;
+      const a = Math.sin(dLat / 2) ** 2 +
+                Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+                Math.sin(dLon / 2) ** 2;
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
       return R * c;
     }
@@ -89,26 +88,54 @@
       let angle = toDeg(Math.atan2(y, x));
       angle = (angle + 360) % 360;
       if (angle >= 337.5 || angle < 22.5) return '⬆️';
-      if (angle >= 22.5 && angle < 67.5) return '↗️';
-      if (angle >= 67.5 && angle < 112.5) return '➡️';
-      if (angle >= 112.5 && angle < 157.5) return '↘️';
-      if (angle >= 157.5 && angle < 202.5) return '⬇️';
-      if (angle >= 202.5 && angle < 247.5) return '↙️';
-      if (angle >= 247.5 && angle < 292.5) return '⬅️';
-      if (angle >= 292.5 && angle < 337.5) return '↖️';
-      return 'Error 404 no angle found.';
+      if (angle < 67.5) return '↗️';
+      if (angle < 112.5) return '➡️';
+      if (angle < 157.5) return '↘️';
+      if (angle < 202.5) return '⬇️';
+      if (angle < 247.5) return '↙️';
+      if (angle < 292.5) return '⬅️';
+      if (angle < 337.5) return '↖️';
+      return '❓';
     }
 
     function saveControldleScore(value) {
       const scores = JSON.parse(localStorage.getItem('controldleScore')) || [];
       scores.push(value);
       localStorage.setItem('controldleScore', JSON.stringify(scores));
-      controldleScoreHistory();
+      updateScoreDisplay();
     }
 
-    function controldleScoreHistory() {
+    function updateScoreDisplay() {
       const scores = JSON.parse(localStorage.getItem('controldleScore')) || [];
       document.getElementById('controldleScoreHistory').textContent = `Previous scores: ${scores.join(', ')}`;
+    }
+
+    function createChart(showDetails = false) {
+      const values = parties.map(p => answer[p]);
+      if (chart) chart.destroy();
+      chart = new Chart(document.getElementById('compositionChart'), {
+        type: 'pie',
+        data: {
+          labels: showDetails ? parties : values.map(() => ''),
+          datasets: [{
+            data: values,
+            backgroundColor: [
+              '#0087DC', '#E4003B', '#FDBB30', '#02A95B',
+              '#12B6CF', '#FDF38E', '#3F8428', '#DCDCDC'
+            ]
+          }]
+        },
+        options: {
+          responsive: false,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              enabled: showDetails
+            }
+          }
+        }
+      });
     }
 
     fetch('councils.json')
@@ -117,6 +144,7 @@
         allCouncils = data;
         const randomIndex = Math.floor(Math.random() * data.length);
         answer = data[randomIndex];
+
         const datalist = document.getElementById('councilList');
         data.forEach(entry => {
           const option = document.createElement('option');
@@ -124,58 +152,15 @@
           datalist.appendChild(option);
         });
 
-        const parties = ['Conservative', 'Labour', 'Liberal Democrat', 'Green', 'Reform', 'SNP', 'Plaid', 'Other'];
-        const values = parties.map(party => answer[party]);
-
-        new Chart(document.getElementById('compositionChart'), {
-          type: 'pie',
-          data: {
-            labels: parties,
-            datasets: [{
-              data: values,
-              backgroundColor: [
-                '#0087DC', '#E4003B', '#FDBB30', '#02A95B',
-                '#12B6CF', '#FDF38E', '#3F8428', '#DCDCDC'
-              ]
-            }]
-          },
-          options: {
-            responsive: false,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: { display: false }
-            }
-          }
-        });
-
-        controldleScoreHistory();
+        createChart(false); // Initial chart without tooltips
+        updateScoreDisplay();
       })
-      .catch(err => {
+      .catch(() => {
         document.getElementById('clueText').textContent = "Error loading data.";
-        console.error(err);
       });
 
     function checkGuess() {
       round += 1;
-
-      if (round === 1 && answer) {
-        const parties = ['Conservative', 'Labour', 'Liberal Democrat', 'Green', 'Reform', 'SNP', 'Plaid', 'Other'];
-        const values = parties.map(party => answer[party]);
-        document.getElementById('clueText').textContent = `Composition: ${values.join(', ')}`;
-      }
-
-      if (round === 2 && answer) {
-        document.getElementById('typeText').textContent = `Type: ${answer.Type}`;
-      }
-
-      if (round > 6) {
-        const resultBox = document.getElementById('result');
-        const limitLine = document.createElement('div');
-        limitLine.innerHTML = `🚫 GAME OVER. You've been Unitarised`;
-        resultBox.appendChild(limitLine);
-        saveControldleScore('X');
-        return;
-      }
 
       const resultBox = document.getElementById('result');
       const input = document.getElementById('guessInput').value.trim().toLowerCase();
@@ -186,27 +171,47 @@
         return;
       }
 
+      if (round === 1) {
+        document.getElementById('clueText').textContent = 'Composition: ???';
+      }
+
+      if (round === 2) {
+        document.getElementById('typeText').textContent = `Type: ${answer.Type}`;
+        createChart(true); // Enable tooltips on second guess
+        const values = parties.map(p => answer[p]);
+        document.getElementById('clueText').textContent = `Composition: ${values.join(', ')}`;
+      }
+
+      if (round > 6) {
+        const gameOver = document.createElement('div');
+        gameOver.innerHTML = `🚫 GAME OVER. You've been Unitarised`;
+        resultBox.appendChild(gameOver);
+        saveControldleScore('X');
+        return;
+      }
+
       if (input === answer.Council.toLowerCase()) {
-        const correctLine = document.createElement('div');
-        correctLine.innerHTML = `✅ <strong>${formattedInput}</strong> - Correct!`;
-        resultBox.appendChild(correctLine);
+        const correct = document.createElement('div');
+        correct.innerHTML = `✅ <strong>${formattedInput}</strong> – Correct!`;
+        resultBox.appendChild(correct);
         saveControldleScore(round);
         return;
       }
 
       const guessed = allCouncils.find(entry => entry.Council.toLowerCase() === input);
       if (!guessed) {
-        const notFoundLine = document.createElement('div');
-        notFoundLine.innerHTML = `❌ <strong>${formattedInput}</strong> - Not found.`;
-        resultBox.appendChild(notFoundLine);
+        const notFound = document.createElement('div');
+        notFound.innerHTML = `❌ <strong>${formattedInput}</strong> – Not found.`;
+        resultBox.appendChild(notFound);
         return;
       }
 
       const distance = haversineDistance(guessed.Lat, guessed.Long, answer.Lat, answer.Long).toFixed(0);
       const direction = getDirection(guessed.Lat, guessed.Long, answer.Lat, answer.Long);
-      const newLine = document.createElement('div');
-      newLine.innerHTML = `❌ <strong>${formattedInput}</strong> - ${distance} miles away ${direction}`;
-      resultBox.appendChild(newLine);
+
+      const feedback = document.createElement('div');
+      feedback.innerHTML = `❌ <strong>${formattedInput}</strong> – ${distance} miles away ${direction}`;
+      resultBox.appendChild(feedback);
     }
   </script>
   <p>
