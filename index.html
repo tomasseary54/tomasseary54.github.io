@@ -46,7 +46,7 @@
 </head>
 <body>
   <h1>CONTROLDLE</h1>
-  <p>v0.5.2.8</p>
+  <p>v0.5.2.9</p>
   <p id="controldleScoreHistory"></p>
   <p id="clueText">Loading clue...</p>
   <canvas id="compositionChart" width="300" height="300" style="width: 40%; height: auto;"></canvas>
@@ -123,7 +123,9 @@
         });
         const parties = ['Conservative', 'Labour', 'Liberal Democrat', 'Green', 'Reform', 'SNP', 'Plaid', 'Other'];
         const values = parties.map(party => answer[party]);
+        if (round === 1) {
         document.getElementById('clueText').textContent = `Composition: ${values.join(', ')}`;
+        }
         new Chart(document.getElementById('compositionChart'), {
   type: 'pie',
   data: {
