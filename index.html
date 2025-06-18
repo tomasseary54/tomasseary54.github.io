@@ -161,18 +161,21 @@
 
     function checkGuess() {
   const resultBox = document.getElementById('result');
-  resultBox.innerHTML = '';
 
   const input = document.getElementById('guessInput').value.trim().toLowerCase();
   const formattedInput = input.charAt(0).toUpperCase() + input.slice(1);
 
   if (!input) {
-    resultBox.textContent = "Please enter a council name.";
+    const warning = document.createElement('div');
+    warning.innerHTML = `⚠️ Please enter a council name.`;
+    resultBox.appendChild(warning);
     return;
   }
 
   if (!answer) {
-    resultBox.textContent = "Still loading data...";
+    const wait = document.createElement('div');
+    wait.innerHTML = `⏳ Still loading data...`;
+    resultBox.appendChild(wait);
     return;
   }
 
