@@ -42,7 +42,7 @@
 </head>
 <body>
   <h1>CONTROLDLE</h1>
-  <p>v0.5.3.6</p>
+  <p>v0.5.4</p>
   <p id="controldleScoreHistory"></p>
   <canvas id="compositionChart" width="300" height="300"></canvas>
   <p id="clueText"></p>
@@ -172,14 +172,16 @@
       }
 
       if (round === 1) {
-        document.getElementById('clueText').textContent = `Composition: ${values.join(', ')}`;
+        document.getElementById('clueText').textContent = 'Composition: ???';
       }
 
       if (round === 2) {
         document.getElementById('typeText').textContent = `Type: ${answer.Type}`;
-        createChart(true); // Enable tooltips on second guess
         const values = parties.map(p => answer[p]);
+        document.getElementById('clueText').textContent = `Composition: ${values.join(', ')}`;
+        createChart(true);
       }
+
 
       if (round > 6) {
         const gameOver = document.createElement('div');
