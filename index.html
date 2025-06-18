@@ -42,7 +42,7 @@
 </head>
 <body>
   <h1>CONTROLDLE</h1>
-  <p>v0.5.7</p>
+  <p>v0.5.8</p>
   <p id="controldleScoreHistory"></p>
   <canvas id="compositionChart" width="300" height="300"></canvas>
   <p id="clueText"></p>
@@ -160,65 +160,65 @@
       });
 
     function checkGuess() {
-      const resultBox = document.getElementById('result');
-      resultBox.innerHTML = '';
+  const resultBox = document.getElementById('result');
+  resultBox.innerHTML = '';
 
-      const input = document.getElementById('guessInput').value.trim().toLowerCase();
-      const formattedInput = input.charAt(0).toUpperCase() + input.slice(1);
+  const input = document.getElementById('guessInput').value.trim().toLowerCase();
+  const formattedInput = input.charAt(0).toUpperCase() + input.slice(1);
 
-      if (!input) {
-        resultBox.textContent = "Please enter a council name.";
-        return;
-      }
+  if (!input) {
+    resultBox.textContent = "Please enter a council name.";
+    return;
+  }
 
-      if (!answer) {
-        resultBox.textContent = "Still loading data...";
-        return;
-      }
+  if (!answer) {
+    resultBox.textContent = "Still loading data...";
+    return;
+  }
 
-      round += 1;
-      const values = parties.map(p => answer[p]);
+  round += 1;
+  const values = parties.map(p => answer[p]);
 
-      if (round === 1) {
-        document.getElementById('clueText').textContent = `Composition: ${values.join(', ')}`;
-        createChart(true);
-      }
+  if (round === 1) {
+    document.getElementById('clueText').textContent = `Composition: ${values.join(', ')}`;
+    createChart(true);
+  }
 
-      if (round === 2) {
-        document.getElementById('typeText').textContent = `Type: ${answer.Type}`;
-      }
+  if (round === 2) {
+    document.getElementById('typeText').textContent = `Type: ${answer.Type}`;
+  }
 
-      if (round > 6) {
-        const gameOver = document.createElement('div');
-        gameOver.innerHTML = `🚫 GAME OVER. You've been Unitarised`;
-        resultBox.appendChild(gameOver);
-        saveControldleScore('X');
-        return;
-      }
+  if (input === answer.Council.toLowerCase()) {
+    const correct = document.createElement('div');
+    correct.innerHTML = `✅ <strong>${formattedInput}</strong> - Correct!`;
+    resultBox.appendChild(correct);
+    saveControldleScore(round);
+    return;
+  }
 
-      if (input === answer.Council.toLowerCase()) {
-        const correct = document.createElement('div');
-        correct.innerHTML = `✅ <strong>${formattedInput}</strong> - Correct!`;
-        resultBox.appendChild(correct);
-        saveControldleScore(round);
-        return;
-      }
+  const guessed = allCouncils.find(entry => entry.Council.toLowerCase() === input);
+  if (!guessed) {
+    const notFound = document.createElement('div');
+    notFound.innerHTML = `❌ <strong>${formattedInput}</strong> - Not found.`;
+    resultBox.appendChild(notFound);
+    return;
+  }
 
-      const guessed = allCouncils.find(entry => entry.Council.toLowerCase() === input);
-      if (!guessed) {
-        const notFound = document.createElement('div');
-        notFound.innerHTML = `❌ <strong>${formattedInput}</strong> - Not found.`;
-        resultBox.appendChild(notFound);
-        return;
-      }
+  const distance = haversineDistance(guessed.Lat, guessed.Long, answer.Lat, answer.Long).toFixed(0);
+  const direction = getDirection(guessed.Lat, guessed.Long, answer.Lat, answer.Long);
 
-      const distance = haversineDistance(guessed.Lat, guessed.Long, answer.Lat, answer.Long).toFixed(0);
-      const direction = getDirection(guessed.Lat, guessed.Long, answer.Lat, answer.Long);
+  const feedback = document.createElement('div');
+  feedback.innerHTML = `❌ <strong>${formattedInput}</strong> - ${distance} miles away ${direction}`;
+  resultBox.appendChild(feedback);
 
-      const feedback = document.createElement('div');
-      feedback.innerHTML = `❌ <strong>${formattedInput}</strong> - ${distance} miles away ${direction}`;
-      resultBox.appendChild(feedback);
-    }
+  if (round >= 6) {
+    const gameOver = document.createElement('div');
+    gameOver.innerHTML = `🚫 GAME OVER. You've been Unitarised`;
+    resultBox.appendChild(gameOver);
+    saveControldleScore('X');
+  }
+}
+
   </script>
 
   <p>
