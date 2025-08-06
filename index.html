@@ -131,9 +131,7 @@
           maintainAspectRatio: false,
           plugins: {
             legend: { display: false },
-            tooltip: {
-              enabled: showDetails
-            }
+            tooltip: { enabled: showDetails }
           }
         }
       });
@@ -143,8 +141,22 @@
       .then(res => res.json())
       .then(data => {
         allCouncils = data;
-        const randomIndex = Math.floor(Math.random() * data.length);
-        answer = data[randomIndex];
+
+        // Get today's date in MM/DD/YYYY format
+        const now = new Date();
+        const today = (now.getMonth() + 1).toString().padStart(2, '0') + '/' +
+                      now.getDate().toString().padStart(2, '0') + '/' +
+                      now.getFullYear();
+
+        // Filter councils for today's date
+        const todaysCouncils = data.filter(entry => entry.Date === today);
+
+        if (todaysCouncils.length === 0) {
+          document.getElementById('clueText').textContent = "No council found for today's date.";
+          return;
+        }
+
+        answer = todaysCouncils[Math.floor(Math.random() * todaysCouncils.length)];
 
         const datalist = document.getElementById('councilList');
         data.forEach(entry => {
@@ -161,68 +173,66 @@
       });
 
     function checkGuess() {
-  const resultBox = document.getElementById('result');
+      const resultBox = document.getElementById('result');
+      const input = document.getElementById('guessInput').value.trim().toLowerCase();
+      const formattedInput = input.charAt(0).toUpperCase() + input.slice(1);
 
-  const input = document.getElementById('guessInput').value.trim().toLowerCase();
-  const formattedInput = input.charAt(0).toUpperCase() + input.slice(1);
+      if (!input) {
+        const warning = document.createElement('div');
+        warning.innerHTML = `⚠️ Please enter a council name.`;
+        resultBox.appendChild(warning);
+        return;
+      }
 
-  if (!input) {
-    const warning = document.createElement('div');
-    warning.innerHTML = `⚠️ Please enter a council name.`;
-    resultBox.appendChild(warning);
-    return;
-  }
+      if (!answer) {
+        const wait = document.createElement('div');
+        wait.innerHTML = `⏳ Still loading data...`;
+        resultBox.appendChild(wait);
+        return;
+      }
 
-  if (!answer) {
-    const wait = document.createElement('div');
-    wait.innerHTML = `⏳ Still loading data...`;
-    resultBox.appendChild(wait);
-    return;
-  }
+      round += 1;
+      const values = parties.map(p => answer[p]);
 
-  round += 1;
-  const values = parties.map(p => answer[p]);
+      if (round === 1) {
+        document.getElementById('clueText').textContent = `Composition: ${values.join(', ')}`;
+        createChart(true);
+      }
 
-  if (round === 1) {
-    document.getElementById('clueText').textContent = `Composition: ${values.join(', ')}`;
-    createChart(true);
-  }
+      if (round === 2) {
+        document.getElementById('typeText').textContent = `Type: ${answer.Type}`;
+      }
 
-  if (round === 2) {
-    document.getElementById('typeText').textContent = `Type: ${answer.Type}`;
-  }
+      if (input === answer.Council.toLowerCase()) {
+        const correct = document.createElement('div');
+        correct.innerHTML = `✅ <strong>${formattedInput}</strong> - Correct!`;
+        resultBox.appendChild(correct);
+        saveControldleScore(round);
+        return;
+      }
 
-  if (input === answer.Council.toLowerCase()) {
-    const correct = document.createElement('div');
-    correct.innerHTML = `✅ <strong>${formattedInput}</strong> - Correct!`;
-    resultBox.appendChild(correct);
-    saveControldleScore(round);
-    return;
-  }
+      const guessed = allCouncils.find(entry => entry.Council.toLowerCase() === input);
+      if (!guessed) {
+        const notFound = document.createElement('div');
+        notFound.innerHTML = `❌ <strong>${formattedInput}</strong> - Not found.`;
+        resultBox.appendChild(notFound);
+        return;
+      }
 
-  const guessed = allCouncils.find(entry => entry.Council.toLowerCase() === input);
-  if (!guessed) {
-    const notFound = document.createElement('div');
-    notFound.innerHTML = `❌ <strong>${formattedInput}</strong> - Not found.`;
-    resultBox.appendChild(notFound);
-    return;
-  }
+      const distance = haversineDistance(guessed.Lat, guessed.Long, answer.Lat, answer.Long).toFixed(0);
+      const direction = getDirection(guessed.Lat, guessed.Long, answer.Lat, answer.Long);
 
-  const distance = haversineDistance(guessed.Lat, guessed.Long, answer.Lat, answer.Long).toFixed(0);
-  const direction = getDirection(guessed.Lat, guessed.Long, answer.Lat, answer.Long);
+      const feedback = document.createElement('div');
+      feedback.innerHTML = `❌ <strong>${formattedInput}</strong> - ${distance} miles away ${direction}`;
+      resultBox.appendChild(feedback);
 
-  const feedback = document.createElement('div');
-  feedback.innerHTML = `❌ <strong>${formattedInput}</strong> - ${distance} miles away ${direction}`;
-  resultBox.appendChild(feedback);
-
-  if (round >= 6) {
-    const gameOver = document.createElement('div');
-    gameOver.innerHTML = `🚫 GAME OVER. You've been Unitarised`;
-    resultBox.appendChild(gameOver);
-    saveControldleScore('X');
-  }
-}
-
+      if (round >= 6) {
+        const gameOver = document.createElement('div');
+        gameOver.innerHTML = `🚫 GAME OVER. You've been Unitarised`;
+        resultBox.appendChild(gameOver);
+        saveControldleScore('X');
+      }
+    }
   </script>
 
   <p>
