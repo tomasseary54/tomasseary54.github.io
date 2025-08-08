@@ -1044,7 +1044,7 @@
     "SNP": 0,
     "Plaid": 0,
     "Other": 5,
-    "Long": 1.191,
+    "Long": -1.191,
     "Lat": 51.0349,
     "Type": "County",
     "Date": "10/14/2025"
@@ -1644,7 +1644,7 @@
     "SNP": 0,
     "Plaid": 0,
     "Other": 17,
-    "Long": 0.1997,
+    "Long": -0.1997,
     "Lat": 51.2277,
     "Type": "County",
     "Date": "11/23/2025"
