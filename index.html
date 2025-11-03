@@ -43,7 +43,7 @@
 </head>
 <body>
   <h1>CONTROLDLE.com</h1>
-  <p>v0.5.9.8</p>
+  <p>v0.5.9.9</p>
   <p id="controldleScoreHistory"></p>
   <canvas id="compositionChart" width="300" height="300"></canvas>
   <p id="clueText"></p>
@@ -106,7 +106,7 @@
   updateScoreDisplay();
 
   // Send score to the Google Sheet
-  fetch('https://script.google.com/macros/s/AKfycbzr70Y0A136ZFx-4iEGqgtob2C4v0NEldIfF9vMMeHi75BR4LSR3nhXZQI_hMr8Nu9JxQ/exec', {
+  fetch('https://script.google.com/macros/s/AKfycbyRsgWrplcPex4jcZXh0zYqEuo2dfdfwicfafEX3m_ll27HfQv3HC0PGL0BpaOiBt-GRw/exec', {
     method: 'POST',
     mode: 'no-cors', // avoids CORS preflight
     headers: { 'Content-Type': 'text/plain' },
