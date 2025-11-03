@@ -43,7 +43,7 @@
 </head>
 <body>
   <h1>CONTROLDLE.com</h1>
-  <p>v0.5.9.5</p>
+  <p>v0.5.9.6</p>
   <p id="controldleScoreHistory"></p>
   <canvas id="compositionChart" width="300" height="300"></canvas>
   <p id="clueText"></p>
@@ -100,11 +100,18 @@
     }
 
     function saveControldleScore(value) {
-      const scores = JSON.parse(localStorage.getItem('controldleScore')) || [];
-      scores.push(value);
-      localStorage.setItem('controldleScore', JSON.stringify(scores));
-      updateScoreDisplay();
-    }
+  const scores = JSON.parse(localStorage.getItem('controldleScore')) || [];
+  scores.push(value);
+  localStorage.setItem('controldleScore', JSON.stringify(scores));
+  updateScoreDisplay();
+
+  fetch('https://script.google.com/macros/s/AKfycbzr70Y0A136ZFx-4iEGqgtob2C4v0NEldIfF9vMMeHi75BR4LSR3nhXZQI_hMr8Nu9JxQ/exec', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ score: value })
+  });
+}
+
 
     function updateScoreDisplay() {
       const scores = JSON.parse(localStorage.getItem('controldleScore')) || [];
