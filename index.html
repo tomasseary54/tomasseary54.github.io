@@ -3,59 +3,71 @@
 <head>
   <meta charset="UTF-8">
   <title>Controldle</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+
   <style>
     body {
       font-family: 'Montserrat', sans-serif;
+      background: #f4f6f8;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .game-card {
+      max-width: 520px;
+      width: 100%;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+      padding: 2rem;
       text-align: center;
-      margin: 1rem;
     }
     canvas {
       display: block;
       margin: 1rem auto;
       max-width: 300px;
     }
-    .input-wrapper {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.5rem;
-      margin-top: 1rem;
-      width: 70%;
-      margin-left: auto;
-      margin-right: auto;
-    }
-    input[type="text"], button {
-      font-size: 1rem;
-      padding: 0.5rem;
-      width: 250px;
-      max-width: 90%;
-    }
-    #result {
-      margin-top: 1rem;
-      font-weight: bold;
-    }
+    #result > div { margin-top: .5rem; }
   </style>
 </head>
 <body>
-  <h1>CONTROLDLE.com</h1>
-  <p>v0.6.2</p>
-  <p id="controldleScoreHistory"></p>
-  <canvas id="compositionChart" width="300" height="300"></canvas>
-  <p id="clueText"></p>
-  <p id="typeText"></p>
 
-  <div class="input-wrapper">
-    <input type="text" id="guessInput" placeholder="Enter council name" list="councilList" />
-    <datalist id="councilList"></datalist>
-    <button onclick="checkGuess()">Submit</button>
+  <div class="game-card">
+    <h1 class="mb-1">CONTROLDLE.com</h1>
+    <p class="text-muted mb-3">v0.6.3</p>
+
+    <p id="controldleScoreHistory" class="small mb-2"></p>
+    <canvas id="compositionChart" width="300" height="300"></canvas>
+    <p id="clueText" class="mb-1"></p>
+    <p id="typeText" class="mb-3"></p>
+
+    <div class="d-grid gap-2 mb-2">
+      <input type="text" id="guessInput" class="form-control"
+             placeholder="Enter council name" list="councilList" />
+      <datalist id="councilList"></datalist>
+      <button type="button" class="btn btn-primary" onclick="checkGuess()">Submit</button>
+    </div>
+
+    <div id="result" class="text-start small"></div>
+
+    <hr class="my-4">
+
+    <p class="small mx-auto" style="max-width: 320px; line-height: 1.6;">
+      Data sourced from
+      <a href="https://opencouncildata.co.uk" target="_blank" rel="noopener">Open Council Data UK</a>, licensed under CC BY-SA 4.0.
+      This game is a work in progress and now records final scores and submission times anonymously in a Google Sheet to track scores and to eventually build a future leaderboard. No personal data is collected.
+    </p>
   </div>
-
-  <div id="result"></div>
 
   <script>
     let answer = null;
@@ -67,7 +79,7 @@
 
     function haversineDistance(lat1, lon1, lat2, lon2) {
       const toRad = deg => deg * (Math.PI / 180);
-      const R = 3958.8;
+      const R = 3958.8; // miles
       const dLat = toRad(lat2 - lat1);
       const dLon = toRad(lon2 - lon1);
       const a = Math.sin(dLat / 2) ** 2 +
@@ -100,20 +112,18 @@
     }
 
     function saveControldleScore(value) {
-  const scores = JSON.parse(localStorage.getItem('controldleScore')) || [];
-  scores.push(value);
-  localStorage.setItem('controldleScore', JSON.stringify(scores));
-  updateScoreDisplay();
+      const scores = JSON.parse(localStorage.getItem('controldleScore')) || [];
+      scores.push(value);
+      localStorage.setItem('controldleScore', JSON.stringify(scores));
+      updateScoreDisplay();
 
-  // Send score to the Google Sheet
-  fetch('https://script.google.com/macros/s/AKfycbyRsgWrplcPex4jcZXh0zYqEuo2dfdfwicfafEX3m_ll27HfQv3HC0PGL0BpaOiBt-GRw/exec', {
-    method: 'POST',
-    mode: 'no-cors', // avoids CORS preflight
-    headers: { 'Content-Type': 'text/plain' },
-    body: JSON.stringify({ score: value })
-  });
-}
-
+      fetch('https://script.google.com/macros/s/AKfycbyRsgWrplcPex4jcZXh0zYqEuo2dfdfwicfafEX3m_ll27HfQv3HC0PGL0BpaOiBt-GRw/exec', {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({ score: value })
+      });
+    }
 
     function updateScoreDisplay() {
       const scores = JSON.parse(localStorage.getItem('controldleScore')) || [];
@@ -151,13 +161,12 @@
       .then(data => {
         allCouncils = data;
 
-        // Get today's date in MM/DD/YYYY format
+        // Today's date in MM/DD/YYYY to match your dataset
         const now = new Date();
         const today = (now.getMonth() + 1).toString().padStart(2, '0') + '/' +
                       now.getDate().toString().padStart(2, '0') + '/' +
                       now.getFullYear();
 
-        // Filter councils for today's date
         const todaysCouncils = data.filter(entry => entry.Date === today);
 
         if (todaysCouncils.length === 0) {
@@ -244,8 +253,6 @@
     }
   </script>
 
-  <p style="max-width: 300; margin: 0 auto; line-height: 1.6;">
-    Data sourced from <a href="https://opencouncildata.co.uk" target="_blank" rel="noopener">Open Council Data UK</a>, licensed under CC BY-SA 4.0.<br> This game is a work in progress and now records final scores and<br>submission times anonymously in a Google Sheet to track scores<br>and to eventually build a future leaderboard.<br>No personal data is collected.
-</p>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
