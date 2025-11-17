@@ -3600,18 +3600,18 @@
     "Date": "04/02/2026"
   },
   {
-    "Council": "Fenland",
-    "Conservative": 35,
-    "Labour": 0,
-    "Liberal Democrat": 2,
+    "Council": "North Tyneside",
+    "Conservative": 8,
+    "Labour": 49,
+    "Liberal Democrat": 0,
     "Green": 0,
     "Reform": 0,
     "SNP": 0,
     "Plaid": 0,
-    "Other": 6,
-    "Long": 0.008927,
-    "Lat": 52.5354,
-    "Type": "District",
+    "Other": 1,
+    "Long": -1.50901,
+    "Lat": 55.029,
+    "Type": "Metropolitan",
     "Date": "04/03/2026"
   },
   {
@@ -3765,18 +3765,18 @@
     "Date": "04/13/2026"
   },
   {
-    "Council": "North Tyneside",
-    "Conservative": 8,
-    "Labour": 49,
-    "Liberal Democrat": 0,
+    "Council": "Fenland",
+    "Conservative": 35,
+    "Labour": 0,
+    "Liberal Democrat": 2,
     "Green": 0,
     "Reform": 0,
     "SNP": 0,
     "Plaid": 0,
-    "Other": 1,
-    "Long": -1.50901,
-    "Lat": 55.029,
-    "Type": "Metropolitan",
+    "Other": 6,
+    "Long": 0.008927,
+    "Lat": 52.5354,
+    "Type": "District",
     "Date": "04/14/2026"
   },
   {
