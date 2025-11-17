@@ -120,7 +120,7 @@
 
     function haversineDistance(lat1, lon1, lat2, lon2) {
       const toRad = deg => deg * (Math.PI / 180);
-      const R = 3958.8; // miles
+      const R = 3958.8;
       const dLat = toRad(lat2 - lat1);
       const dLon = toRad(lon2 - lon1);
       const a =
@@ -168,7 +168,7 @@
     function updateUsernameDisplay() {
       const username = localStorage.getItem('username') || 'Guest';
       document.getElementById('controldleUsername').textContent =
-        `Welcome back, ${username} – v0.7.6`;
+        `Welcome back, ${username} – v0.7.7`;
     }
 
     function showUsernameSection() {
@@ -275,14 +275,12 @@
 
         answer = todaysCouncils[Math.floor(Math.random() * todaysCouncils.length)];
 
-        // We no longer need the datalist; suggestions will use allCouncils directly
         createChart(false);
       })
       .catch(() => {
         document.getElementById('clueText').textContent = "Error loading data.";
       });
 
-    // ---- Autocomplete dropdown ----
     function showSuggestions(text) {
       const box = document.getElementById('suggestionsBox');
       if (!box) return;
@@ -307,7 +305,7 @@
       box.innerHTML = matches.map(c =>
         `<button type="button"
                  class="list-group-item list-group-item-action"
-                 onclick="selectSuggestion(${JSON.stringify(c.Council)})">
+                 onclick="selectSuggestion('${c.Council.replace(/'/g, "\\'")}')">
            ${c.Council}
          </button>`
       ).join('');
