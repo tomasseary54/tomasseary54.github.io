@@ -111,42 +111,15 @@
       'Other'
     ];
 
-    function haversineDistance(lat1, lon1, lat2, lon2) {
-      const toRad = deg => deg * (Math.PI / 180);
-      const R = 3958.8; // miles
-      const dLat = toRad(lat2 - lat1);
-      const dLon = toRad(lat2 - lon1);
-      const a =
-        Math.sin(dLat / 2) ** 2 +
-        Math.cos(toRad(lat1)) *
-          Math.cos(toRad(lat2)) *
-          Math.sin(dLon / 2) ** 2;
-      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-      return R * c;
-    }
+    function haversineDistance(lat1, lon1, lat2, lon2) { const toRad = deg => deg * (Math.PI / 180); const R = 3958.8; const dLat = toRad(lat2 - lat1); const dLon = toRad(lon2 - lon1); const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2; const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)); return R * c; }
 
-    function getDirection(fromLat, fromLon, toLat, toLon) {
-      const toRad = angle => angle * Math.PI / 180;
-      const toDeg = rad => rad * 180 / Math.PI;
+    function getDirection(fromLat, fromLon, toLat, toLon)
+    { const toRad = angle => angle * Math.PI / 180; const toDeg = rad => rad * 180 / Math.PI;
       const dLon = toRad(toLon - fromLon);
       const lat1 = toRad(fromLat);
-      const lat2 = toRad(toLat);
-      const y = Math.sin(dLon) * Math.cos(lat2);
-      const x =
-        Math.cos(lat1) * Math.sin(lat2) -
-        Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
-      let angle = toDeg(Math.atan2(y, x));
-      angle = (angle + 360) % 360;
-      if (angle >= 337.5 || angle < 22.5) return '⬆️';
-      if (angle < 67.5) return '↗️';
-      if (angle < 112.5) return '➡️';
-      if (angle < 157.5) return '↘️';
-      if (angle < 202.5) return '⬇️';
-      if (angle < 247.5) return '↙️';
-      if (angle < 292.5) return '⬅️';
-      if (angle < 337.5) return '↖️';
-      return '❓';
-    }
+      const lat2 = toRad(toLat); 
+      onst y = Math.sin(dLon) * Math.cos(lat2);
+      const x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon); let angle = toDeg(Math.atan2(y, x)); angle = (angle + 360) % 360; if (angle >= 337.5 || angle < 22.5) return '⬆️'; if (angle < 67.5) return '↗️'; if (angle < 112.5) return '➡️'; if (angle < 157.5) return '↘️'; if (angle < 202.5) return '⬇️'; if (angle < 247.5) return '↙️'; if (angle < 292.5) return '⬅️'; if (angle < 337.5) return '↖️'; return '❓'; }
 
     function updateScoreDisplay() {
       const scores = JSON.parse(localStorage.getItem('controldleScore')) || [];
@@ -157,7 +130,7 @@
     function updateUsernameDisplay() {
       const username = localStorage.getItem('username') || 'Guest';
       document.getElementById('controldleUsername').textContent =
-        `Welcome back, ${username} – v0.7.1`;
+        `Welcome back, ${username} – v0.7.2`;
     }
 
     function showUsernameSection() {
@@ -189,7 +162,6 @@
       updateUsernameDisplay();
 
       saveControldleScore(finalScore);
-
       msg.textContent = 'Score saved.';
     }
 
