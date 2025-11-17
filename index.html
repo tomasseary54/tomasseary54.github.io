@@ -71,6 +71,17 @@
 
     <div id="result" class="text-start small"></div>
 
+    <div id="usernameSection" class="mt-3" style="display:none;">
+      <label for="usernameInput" class="form-label small mb-1">
+        Enter a username to save your score locally and on the leaderboard:
+      </label>
+      <div class="input-group input-group-sm">
+        <input type="text" id="usernameInput" class="form-control" placeholder="Username">
+        <button class="btn btn-outline-primary" type="button" onclick="submitUsername()">Save score</button>
+      </div>
+      <div id="usernameMessage" class="small mt-1 text-muted"></div>
+    </div>
+
     <hr class="my-4">
 
     <p class="small mx-auto" style="max-width: 320px; line-height: 1.6;">
@@ -87,6 +98,7 @@
     let allCouncils = [];
     let round = 0;
     let chart = null;
+    let finalScore = null;
 
     const parties = [
       'Conservative',
@@ -101,9 +113,9 @@
 
     function haversineDistance(lat1, lon1, lat2, lon2) {
       const toRad = deg => deg * (Math.PI / 180);
-      const R = 3958.8;
+      const R = 3958.8; // miles
       const dLat = toRad(lat2 - lat1);
-      const dLon = toRad(lon2 - lon1);
+      const dLon = toRad(lat2 - lon1);
       const a =
         Math.sin(dLat / 2) ** 2 +
         Math.cos(toRad(lat1)) *
@@ -139,27 +151,46 @@
     function updateScoreDisplay() {
       const scores = JSON.parse(localStorage.getItem('controldleScore')) || [];
       document.getElementById('controldleScoreHistory').textContent =
-        `Previous scores: ${scores.join(', ')}`;
+        scores.length ? `Previous scores: ${scores.join(', ')}` : 'Previous scores: none yet';
     }
 
     function updateUsernameDisplay() {
       const username = localStorage.getItem('username') || 'Guest';
       document.getElementById('controldleUsername').textContent =
-        `Welcome back, ${username} – v0.7.0`;
+        `Welcome back, ${username} – v0.7.1`;
     }
 
-    function promptForUsernameAfterGame() {
-      const existing = localStorage.getItem('username') || '';
-      const promptText = existing
-        ? `Change your username? (current: ${existing})`
-        : 'Enter a username to save your score locally:';
-
-      const name = prompt(promptText, existing);
-
-      if (name && name.trim() !== '') {
-        localStorage.setItem('username', name.trim());
-        updateUsernameDisplay();
+    function showUsernameSection() {
+      const section = document.getElementById('usernameSection');
+      const input = document.getElementById('usernameInput');
+      const stored = localStorage.getItem('username') || '';
+      if (stored && !input.value) {
+        input.value = stored;
       }
+      section.style.display = 'block';
+    }
+
+    function submitUsername() {
+      const input = document.getElementById('usernameInput');
+      const msg = document.getElementById('usernameMessage');
+      const name = input.value.trim();
+
+      if (!name) {
+        msg.textContent = 'Please enter a username before saving your score.';
+        return;
+      }
+
+      if (finalScore === null) {
+        msg.textContent = 'No finished game to save yet.';
+        return;
+      }
+
+      localStorage.setItem('username', name);
+      updateUsernameDisplay();
+
+      saveControldleScore(finalScore);
+
+      msg.textContent = 'Score saved.';
     }
 
     function saveControldleScore(value) {
@@ -286,8 +317,8 @@
         correct.innerHTML = `✅ <strong>${formattedInput}</strong> - Correct!`;
         resultBox.appendChild(correct);
 
-        promptForUsernameAfterGame();
-        saveControldleScore(round);
+        finalScore = round;
+        showUsernameSection();
         return;
       }
 
@@ -325,8 +356,8 @@
         gameOver.innerHTML = `🚫 GAME OVER. You've been Unitarised`;
         resultBox.appendChild(gameOver);
 
-        promptForUsernameAfterGame();
-        saveControldleScore('X');
+        finalScore = 'X';
+        showUsernameSection();
       }
     }
   </script>
