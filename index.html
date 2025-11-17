@@ -58,14 +58,21 @@
     <p id="typeText" class="mb-3"></p>
 
     <div class="d-grid gap-2 mb-2">
-      <input
-        type="text"
-        id="guessInput"
-        class="form-control"
-        placeholder="Enter council name"
-        list="councilList"
-      />
-      <datalist id="councilList"></datalist>
+      <div class="position-relative">
+        <input
+          type="text"
+          id="guessInput"
+          class="form-control"
+          placeholder="Enter council name"
+          autocomplete="off"
+          oninput="showSuggestions(this.value)"
+        />
+        <div id="suggestionsBox"
+             class="list-group position-absolute w-100"
+             style="z-index:10; max-height:200px; overflow-y:auto; display:none;">
+        </div>
+      </div>
+
       <button type="button" class="btn btn-primary" onclick="checkGuess()">Submit</button>
     </div>
 
@@ -161,7 +168,7 @@
     function updateUsernameDisplay() {
       const username = localStorage.getItem('username') || 'Guest';
       document.getElementById('controldleUsername').textContent =
-        `Welcome back, ${username} – v0.7.5`;
+        `Welcome back, ${username} – v0.7.6`;
     }
 
     function showUsernameSection() {
@@ -268,20 +275,67 @@
 
         answer = todaysCouncils[Math.floor(Math.random() * todaysCouncils.length)];
 
-        const datalist = document.getElementById('councilList');
-        data.forEach(entry => {
-          const option = document.createElement('option');
-          option.value = entry.Council;
-          datalist.appendChild(option);
-        });
-
+        // We no longer need the datalist; suggestions will use allCouncils directly
         createChart(false);
       })
       .catch(() => {
         document.getElementById('clueText').textContent = "Error loading data.";
       });
 
+    // ---- Autocomplete dropdown ----
+    function showSuggestions(text) {
+      const box = document.getElementById('suggestionsBox');
+      if (!box) return;
+
+      const query = text.trim().toLowerCase();
+      if (!query) {
+        box.style.display = 'none';
+        box.innerHTML = '';
+        return;
+      }
+
+      const matches = allCouncils
+        .filter(c => c.Council.toLowerCase().includes(query))
+        .slice(0, 20);
+
+      if (!matches.length) {
+        box.style.display = 'none';
+        box.innerHTML = '';
+        return;
+      }
+
+      box.innerHTML = matches.map(c =>
+        `<button type="button"
+                 class="list-group-item list-group-item-action"
+                 onclick="selectSuggestion(${JSON.stringify(c.Council)})">
+           ${c.Council}
+         </button>`
+      ).join('');
+
+      box.style.display = 'block';
+    }
+
+    function selectSuggestion(name) {
+      const input = document.getElementById('guessInput');
+      const box = document.getElementById('suggestionsBox');
+      if (input) input.value = name;
+      if (box) {
+        box.style.display = 'none';
+        box.innerHTML = '';
+      }
+    }
+
+    function hideSuggestions() {
+      const box = document.getElementById('suggestionsBox');
+      if (box) {
+        box.style.display = 'none';
+        box.innerHTML = '';
+      }
+    }
+
     function checkGuess() {
+      hideSuggestions();
+
       const resultBox = document.getElementById('result');
       const inputRaw = document.getElementById('guessInput').value.trim();
       const input = inputRaw.toLowerCase();
