@@ -7,8 +7,8 @@
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
@@ -37,20 +37,20 @@
       margin: 1rem auto;
       max-width: 300px;
     }
-
     h1 {
-  font-weight: 700 !important;
-  letter-spacing: 0.5px;
+      font-weight: 700 !important;
+      letter-spacing: 0.5px;
     }
-
-    #result > div { margin-top: .5rem; }
+    #result > div {
+      margin-top: .5rem;
+    }
   </style>
 </head>
 <body>
 
   <div class="game-card">
     <h1 class="mb-1">CONTROLDLE.com</h1>
-    <p class="text-muted mb-3">Welcome back NAME. v0.6.9</p>
+    <p id="controldleUsername" class="text-muted mb-3"></p>
 
     <p id="controldleScoreHistory" class="small mb-2"></p>
     <canvas id="compositionChart" width="300" height="300"></canvas>
@@ -58,8 +58,13 @@
     <p id="typeText" class="mb-3"></p>
 
     <div class="d-grid gap-2 mb-2">
-      <input type="text" id="guessInput" class="form-control"
-             placeholder="Enter council name" list="councilList" />
+      <input
+        type="text"
+        id="guessInput"
+        class="form-control"
+        placeholder="Enter council name"
+        list="councilList"
+      />
       <datalist id="councilList"></datalist>
       <button type="button" class="btn btn-primary" onclick="checkGuess()">Submit</button>
     </div>
@@ -70,7 +75,10 @@
 
     <p class="small mx-auto" style="max-width: 320px; line-height: 1.6;">
       Data sourced from
-      <a href="https://opencouncildata.co.uk" target="_blank" rel="noopener">Open Council Data UK,<a> licensed under CC BY-SA 4.0. This game is a work in progress and now records final scores and submission times anonymously in a Google Sheet to track scores and to eventually build a future leaderboard. No personal data is collected. Compositions accurate as of 1st May 2025.
+      <a href="https://opencouncildata.co.uk" target="_blank" rel="noopener">Open Council Data UK</a>,
+      licensed under CC BY-SA 4.0. This game is a work in progress and now records final scores and
+      submission times anonymously in a Google Sheet to track scores and to eventually build a future
+      leaderboard. No personal data is collected. Compositions accurate as of 1st May 2025.
     </p>
   </div>
 
@@ -80,16 +88,27 @@
     let round = 0;
     let chart = null;
 
-    const parties = ['Conservative', 'Labour', 'Liberal Democrat', 'Green', 'Reform', 'SNP', 'Plaid', 'Other'];
+    const parties = [
+      'Conservative',
+      'Labour',
+      'Liberal Democrat',
+      'Green',
+      'Reform',
+      'SNP',
+      'Plaid',
+      'Other'
+    ];
 
     function haversineDistance(lat1, lon1, lat2, lon2) {
       const toRad = deg => deg * (Math.PI / 180);
       const R = 3958.8;
       const dLat = toRad(lat2 - lat1);
       const dLon = toRad(lon2 - lon1);
-      const a = Math.sin(dLat / 2) ** 2 +
-                Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
-                Math.sin(dLon / 2) ** 2;
+      const a =
+        Math.sin(dLat / 2) ** 2 +
+        Math.cos(toRad(lat1)) *
+          Math.cos(toRad(lat2)) *
+          Math.sin(dLon / 2) ** 2;
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
       return R * c;
     }
@@ -101,8 +120,9 @@
       const lat1 = toRad(fromLat);
       const lat2 = toRad(toLat);
       const y = Math.sin(dLon) * Math.cos(lat2);
-      const x = Math.cos(lat1) * Math.sin(lat2) -
-                Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
+      const x =
+        Math.cos(lat1) * Math.sin(lat2) -
+        Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
       let angle = toDeg(Math.atan2(y, x));
       angle = (angle + 360) % 360;
       if (angle >= 337.5 || angle < 22.5) return '⬆️';
@@ -116,23 +136,46 @@
       return '❓';
     }
 
+    function updateScoreDisplay() {
+      const scores = JSON.parse(localStorage.getItem('controldleScore')) || [];
+      document.getElementById('controldleScoreHistory').textContent =
+        `Previous scores: ${scores.join(', ')}`;
+    }
+
+    function updateUsernameDisplay() {
+      const username = localStorage.getItem('username') || 'Guest';
+      document.getElementById('controldleUsername').textContent =
+        `Welcome back, ${username} – v0.7.0`;
+    }
+
+    function promptForUsernameAfterGame() {
+      const existing = localStorage.getItem('username') || '';
+      const promptText = existing
+        ? `Change your username? (current: ${existing})`
+        : 'Enter a username to save your score locally:';
+
+      const name = prompt(promptText, existing);
+
+      if (name && name.trim() !== '') {
+        localStorage.setItem('username', name.trim());
+        updateUsernameDisplay();
+      }
+    }
+
     function saveControldleScore(value) {
       const scores = JSON.parse(localStorage.getItem('controldleScore')) || [];
       scores.push(value);
       localStorage.setItem('controldleScore', JSON.stringify(scores));
       updateScoreDisplay();
 
+      const username = localStorage.getItem('username') || 'Guest';
+
       fetch('https://script.google.com/macros/s/AKfycbyRsgWrplcPex4jcZXh0zYqEuo2dfdfwicfafEX3m_ll27HfQv3HC0PGL0BpaOiBt-GRw/exec', {
         method: 'POST',
         mode: 'no-cors',
         headers: { 'Content-Type': 'text/plain' },
-        body: JSON.stringify({ score: value })
+        body: JSON.stringify({ username, score: value })
       });
-    }
-
-    function updateScoreDisplay() {
-      const scores = JSON.parse(localStorage.getItem('controldleScore')) || [];
-      document.getElementById('controldleScoreHistory').textContent = `Previous scores: ${scores.join(', ')}`;
     }
 
     function createChart(showDetails = false) {
@@ -145,8 +188,14 @@
           datasets: [{
             data: values,
             backgroundColor: [
-              '#0087DC', '#E4003B', '#FDBB30', '#02A95B',
-              '#12B6CF', '#FDF38E', '#3F8428', '#DCDCDC'
+              '#0087DC',
+              '#E4003B',
+              '#FDBB30',
+              '#02A95B',
+              '#12B6CF',
+              '#FDF38E',
+              '#3F8428',
+              '#DCDCDC'
             ]
           }]
         },
@@ -161,20 +210,25 @@
       });
     }
 
+    updateUsernameDisplay();
+    updateScoreDisplay();
+
     fetch('councils.json')
       .then(res => res.json())
       .then(data => {
         allCouncils = data;
 
         const now = new Date();
-        const today = (now.getMonth() + 1).toString().padStart(2, '0') + '/' +
-                      now.getDate().toString().padStart(2, '0') + '/' +
-                      now.getFullYear();
+        const today =
+          (now.getMonth() + 1).toString().padStart(2, '0') + '/' +
+          now.getDate().toString().padStart(2, '0') + '/' +
+          now.getFullYear();
 
         const todaysCouncils = data.filter(entry => entry.Date === today);
 
         if (todaysCouncils.length === 0) {
-          document.getElementById('clueText').textContent = "No council found for today's date.";
+          document.getElementById('clueText').textContent =
+            "No council found for today's date.";
           return;
         }
 
@@ -188,7 +242,6 @@
         });
 
         createChart(false);
-        updateScoreDisplay();
       })
       .catch(() => {
         document.getElementById('clueText').textContent = "Error loading data.";
@@ -196,8 +249,10 @@
 
     function checkGuess() {
       const resultBox = document.getElementById('result');
-      const input = document.getElementById('guessInput').value.trim().toLowerCase();
-      const formattedInput = input.charAt(0).toUpperCase() + input.slice(1);
+      const inputRaw = document.getElementById('guessInput').value.trim();
+      const input = inputRaw.toLowerCase();
+      const formattedInput =
+        inputRaw.charAt(0).toUpperCase() + inputRaw.slice(1);
 
       if (!input) {
         const warning = document.createElement('div');
@@ -217,7 +272,8 @@
       const values = parties.map(p => answer[p]);
 
       if (round === 1) {
-        document.getElementById('clueText').textContent = `Composition: ${values.join(', ')}`;
+        document.getElementById('clueText').textContent =
+          `Composition: ${values.join(', ')}`;
         createChart(true);
       }
 
@@ -229,11 +285,16 @@
         const correct = document.createElement('div');
         correct.innerHTML = `✅ <strong>${formattedInput}</strong> - Correct!`;
         resultBox.appendChild(correct);
+
+        promptForUsernameAfterGame();
         saveControldleScore(round);
         return;
       }
 
-      const guessed = allCouncils.find(entry => entry.Council.toLowerCase() === input);
+      const guessed = allCouncils.find(
+        entry => entry.Council.toLowerCase() === input
+      );
+
       if (!guessed) {
         const notFound = document.createElement('div');
         notFound.innerHTML = `❌ <strong>${formattedInput}</strong> - Not found.`;
@@ -241,17 +302,30 @@
         return;
       }
 
-      const distance = haversineDistance(guessed.Lat, guessed.Long, answer.Lat, answer.Long).toFixed(0);
-      const direction = getDirection(guessed.Lat, guessed.Long, answer.Lat, answer.Long);
+      const distance = haversineDistance(
+        guessed.Lat,
+        guessed.Long,
+        answer.Lat,
+        answer.Long
+      ).toFixed(0);
+      const direction = getDirection(
+        guessed.Lat,
+        guessed.Long,
+        answer.Lat,
+        answer.Long
+      );
 
       const feedback = document.createElement('div');
-      feedback.innerHTML = `❌ <strong>${formattedInput}</strong> - ${distance} miles away ${direction}`;
+      feedback.innerHTML =
+        `❌ <strong>${formattedInput}</strong> - ${distance} miles away ${direction}`;
       resultBox.appendChild(feedback);
 
       if (round >= 6) {
         const gameOver = document.createElement('div');
         gameOver.innerHTML = `🚫 GAME OVER. You've been Unitarised`;
         resultBox.appendChild(gameOver);
+
+        promptForUsernameAfterGame();
         saveControldleScore('X');
       }
     }
