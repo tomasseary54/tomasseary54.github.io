@@ -169,7 +169,7 @@
     function updateUsernameDisplay() {
       const username = localStorage.getItem('username') || 'Guest';
       document.getElementById('controldleUsername').textContent =
-        `Welcome back, ${username} - v0.8.3`;
+        `Welcome back, ${username} - v0.8.4`;
     }
 
     function showUsernameSection() {
@@ -375,7 +375,7 @@
       round += 1;
       const values = parties.map(p => answer[p]);
 
-      if (round === 2) {
+      if (round === 1) {
         document.getElementById('clueText').textContent =
           `Composition: ${values.join(', ')}`;
         createChart(true, false);
