@@ -58,7 +58,6 @@
     <p id="typeText" class="mb-1"></p>
     <p id="spacingText" class="mb-1"></p>
 
-
     <div class="d-grid gap-2 mb-2">
       <div class="position-relative">
         <input
@@ -170,7 +169,7 @@
     function updateUsernameDisplay() {
       const username = localStorage.getItem('username') || 'Guest';
       document.getElementById('controldleUsername').textContent =
-        `Welcome back, ${username} - v0.8.2`;
+        `Welcome back, ${username} - v0.8.3`;
     }
 
     function showUsernameSection() {
@@ -221,25 +220,42 @@
       });
     }
 
-    function createChart(showDetails = false) {
+    function createChart(showDetails = false, useGreyscale = false) {
       const values = parties.map(p => answer[p]);
+
+      const partyColours = [
+        '#0087DC',
+        '#E4003B',
+        '#FDBB30',
+        '#02A95B',
+        '#12B6CF',
+        '#FDF38E',
+        '#3F8428',
+        '#DCDCDC'
+      ];
+
+      const greyscaleColours = [
+        '#111111',
+        '#333333',
+        '#555555',
+        '#777777',
+        '#999999',
+        '#BBBBBB',
+        '#DDDDDD',
+        '#F0F0F0'
+      ];
+
       if (chart) chart.destroy();
+
       chart = new Chart(document.getElementById('compositionChart'), {
         type: 'pie',
         data: {
           labels: showDetails ? parties : values.map(() => ''),
           datasets: [{
             data: values,
-            backgroundColor: [
-              '#0087DC',
-              '#E4003B',
-              '#FDBB30',
-              '#02A95B',
-              '#12B6CF',
-              '#FDF38E',
-              '#3F8428',
-              '#DCDCDC'
-            ]
+            backgroundColor: useGreyscale ? greyscaleColours : partyColours,
+            borderColor: '#ffffff',
+            borderWidth: 2
           }]
         },
         options: {
@@ -277,7 +293,7 @@
 
         answer = todaysCouncils[Math.floor(Math.random() * todaysCouncils.length)];
 
-        createChart(false);
+        createChart(false, true);
       })
       .catch(() => {
         document.getElementById('clueText').textContent = "Error loading data.";
@@ -344,14 +360,14 @@
 
       if (!input) {
         const warning = document.createElement('div');
-        warning.innerHTML = `⚠️ Please enter a council name.`;
+        warning.innerHTML = `Please enter a council name.`;
         resultBox.appendChild(warning);
         return;
       }
 
       if (!answer) {
         const wait = document.createElement('div');
-        wait.innerHTML = `⏳ Still loading data...`;
+        wait.innerHTML = `Still loading data...`;
         resultBox.appendChild(wait);
         return;
       }
@@ -359,17 +375,17 @@
       round += 1;
       const values = parties.map(p => answer[p]);
 
-      if (round === 1) {
+      if (round === 2) {
         document.getElementById('clueText').textContent =
           `Composition: ${values.join(', ')}`;
-        createChart(true);
+        createChart(true, false);
       }
 
-      if (round === 2) {
+      if (round === 3) {
         document.getElementById('typeText').textContent = `Type: ${answer.Type}`;
       }
 
-      if (round === 3){
+      if (round === 4) {
         document.getElementById('spacingText').textContent = `Spacing: ${answer.Spacing}`;
       }
 
