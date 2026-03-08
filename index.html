@@ -127,8 +127,8 @@
       const a =
         Math.sin(dLat / 2) ** 2 +
         Math.cos(toRad(lat1)) *
-          Math.cos(toRad(lat2)) *
-          Math.sin(dLon / 2) ** 2;
+        Math.cos(toRad(lat2)) *
+        Math.sin(dLon / 2) ** 2;
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
       return R * c;
     }
@@ -169,7 +169,7 @@
     function updateUsernameDisplay() {
       const username = localStorage.getItem('username') || 'Guest';
       document.getElementById('controldleUsername').textContent =
-        `Welcome back, ${username} - v0.8.4`;
+        `Welcome back, ${username} - v0.8.5`;
     }
 
     function showUsernameSection() {
@@ -293,6 +293,7 @@
 
         answer = todaysCouncils[Math.floor(Math.random() * todaysCouncils.length)];
 
+        // Start: greyscale pie, no labels, no numbers
         createChart(false, true);
       })
       .catch(() => {
@@ -375,16 +376,24 @@
       round += 1;
       const values = parties.map(p => answer[p]);
 
+      // After guess 1: coloured pie only, no numbers/text
       if (round === 1) {
+        createChart(false, false);
+      }
+
+      // After guess 2: composition text and labelled coloured pie
+      if (round === 2) {
         document.getElementById('clueText').textContent =
           `Composition: ${values.join(', ')}`;
         createChart(true, false);
       }
 
+      // After guess 3: type clue
       if (round === 3) {
         document.getElementById('typeText').textContent = `Type: ${answer.Type}`;
       }
 
+      // After guess 4: spacing clue
       if (round === 4) {
         document.getElementById('spacingText').textContent = `Spacing: ${answer.Spacing}`;
       }
