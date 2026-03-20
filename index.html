@@ -131,6 +131,17 @@
       'Other'
     ];
 
+    const partyColours = [
+      '#0087DC',
+      '#E4003B',
+      '#FDBB30',
+      '#02A95B',
+      '#12B6CF',
+      '#FDF38E',
+      '#3F8428',
+      '#DCDCDC'
+    ];
+
     function haversineDistance(lat1, lon1, lat2, lon2) {
       const toRad = deg => deg * (Math.PI / 180);
       const R = 3958.8;
@@ -190,7 +201,7 @@
     function updateUsernameDisplay() {
       const username = localStorage.getItem('username') || 'Guest';
       document.getElementById('controldleUsername').innerHTML =
-        `Welcome back, ${username} - v0.9.1`;
+        `Welcome back, ${username} - v0.9.2`;
     }
 
     function showUsernameSection() {
@@ -251,32 +262,10 @@
       });
     }
 
-    function createChart(showDetails = false, useGreyscale = false) {
+    function createChart(showDetails = false) {
       if (!answer) return;
 
       const values = parties.map(p => Number(answer[p]) || 0);
-
-      const partyColours = [
-        '#0087DC',
-        '#E4003B',
-        '#FDBB30',
-        '#02A95B',
-        '#12B6CF',
-        '#FDF38E',
-        '#3F8428',
-        '#DCDCDC'
-      ];
-
-      const greyscaleColours = [
-        '#111111',
-        '#333333',
-        '#555555',
-        '#777777',
-        '#999999',
-        '#BBBBBB',
-        '#DDDDDD',
-        '#F0F0F0'
-      ];
 
       if (chart) {
         chart.destroy();
@@ -288,7 +277,7 @@
           labels: showDetails ? parties : values.map(() => ''),
           datasets: [{
             data: values,
-            backgroundColor: useGreyscale ? greyscaleColours : partyColours,
+            backgroundColor: partyColours,
             borderColor: '#ffffff',
             borderWidth: 2
           }]
@@ -357,12 +346,12 @@
       const values = parties.map(p => Number(answer[p]) || 0);
 
       if (round === 1) {
-        createChart(false, false);
+        createChart(false);
       }
 
       if (round === 2) {
         document.getElementById('clueText').textContent = `Composition: ${values.join(', ')}`;
-        createChart(true, false);
+        createChart(true);
       }
 
       if (round === 3) {
@@ -456,7 +445,7 @@
       }
 
       answer = todaysCouncils[Math.floor(Math.random() * todaysCouncils.length)];
-      createChart(false, true);
+      createChart(false);
     }
 
     document.addEventListener('DOMContentLoaded', () => {
