@@ -23,6 +23,7 @@
       justify-content: center;
       padding: 1rem;
     }
+
     .game-card {
       max-width: 520px;
       width: 100%;
@@ -32,17 +33,28 @@
       padding: 2rem;
       text-align: center;
     }
+
     canvas {
       display: block;
       margin: 1rem auto;
       max-width: 300px;
     }
+
     h1 {
       font-weight: 700 !important;
       letter-spacing: 0.5px;
     }
+
     #result > div {
-      margin-top: .5rem;
+      margin-top: 0.5rem;
+    }
+
+    #suggestionsBox {
+      z-index: 10;
+      max-height: 200px;
+      overflow-y: auto;
+      display: none;
+      text-align: left;
     }
   </style>
 </head>
@@ -66,15 +78,14 @@
           class="form-control"
           placeholder="Enter council name"
           autocomplete="off"
-          oninput="showSuggestions(this.value)"
         />
-        <div id="suggestionsBox"
-             class="list-group position-absolute w-100"
-             style="z-index:10; max-height:200px; overflow-y:auto; display:none;">
+        <div
+          id="suggestionsBox"
+          class="list-group position-absolute w-100">
         </div>
       </div>
 
-      <button type="button" class="btn btn-primary" onclick="checkGuess()">Submit</button>
+      <button type="button" id="submitButton" class="btn btn-primary">Submit</button>
     </div>
 
     <div id="result" class="text-start small"></div>
@@ -85,7 +96,7 @@
       </label>
       <div class="input-group input-group-sm">
         <input type="text" id="usernameInput" class="form-control" placeholder="Username">
-        <button class="btn btn-outline-primary" type="button" onclick="submitUsername()">Save score</button>
+        <button class="btn btn-outline-primary" type="button" id="saveScoreButton">Save score</button>
       </div>
       <div id="usernameMessage" class="small mt-1 text-muted"></div>
     </div>
@@ -96,8 +107,8 @@
       Data sourced from
       <a href="https://opencouncildata.co.uk" target="_blank" rel="noopener">Open Council Data UK</a>,
       licensed under CC BY-SA 4.0. This game is a work in progress and now records final scores and
-      submission times anonymously/under a name of your choosing in a Google Sheet to track scores and to eventually build a future
-      leaderboard. No personal/device data is collected. Compositions accurate as of 1st May 2025.
+      submission times anonymously or under a name of your choosing in a Google Sheet to track scores and to eventually build a future
+      leaderboard. No personal or device data is collected. Compositions accurate as of 1st May 2025.
     </p>
   </div>
 
@@ -107,6 +118,7 @@
     let round = 0;
     let chart = null;
     let finalScore = null;
+    let gameFinished = false;
 
     const parties = [
       'Conservative',
@@ -124,11 +136,13 @@
       const R = 3958.8;
       const dLat = toRad(lat2 - lat1);
       const dLon = toRad(lon2 - lon1);
+
       const a =
         Math.sin(dLat / 2) ** 2 +
         Math.cos(toRad(lat1)) *
         Math.cos(toRad(lat2)) *
         Math.sin(dLon / 2) ** 2;
+
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
       return R * c;
     }
@@ -160,6 +174,13 @@
       return '❓';
     }
 
+    function appendResult(html) {
+      const resultBox = document.getElementById('result');
+      const div = document.createElement('div');
+      div.innerHTML = html;
+      resultBox.appendChild(div);
+    }
+
     function updateScoreDisplay() {
       const scores = JSON.parse(localStorage.getItem('controldleScore')) || [];
       document.getElementById('controldleScoreHistory').textContent =
@@ -168,19 +189,27 @@
 
     function updateUsernameDisplay() {
       const username = localStorage.getItem('username') || 'Guest';
-      document.getElementById('controldleUsername').textContent =
-        `Welcome back, ${username} - v0.9
-        What's new? 3rd clue added, dropdown selection, and you can now upload your score to the leaderboard with a username!`;
+      document.getElementById('controldleUsername').innerHTML =
+        `Welcome back, ${username} - v0.9.1`;
     }
 
     function showUsernameSection() {
       const section = document.getElementById('usernameSection');
       const input = document.getElementById('usernameInput');
       const stored = localStorage.getItem('username') || '';
+
       if (stored && !input.value) {
         input.value = stored;
       }
+
       section.style.display = 'block';
+    }
+
+    function lockGame() {
+      gameFinished = true;
+      document.getElementById('guessInput').disabled = true;
+      document.getElementById('submitButton').disabled = true;
+      hideSuggestions();
     }
 
     function submitUsername() {
@@ -200,7 +229,6 @@
 
       localStorage.setItem('username', name);
       updateUsernameDisplay();
-
       saveControldleScore(finalScore);
       msg.textContent = 'Score saved.';
     }
@@ -218,11 +246,15 @@
         mode: 'no-cors',
         headers: { 'Content-Type': 'text/plain' },
         body: JSON.stringify({ username, score: value })
+      }).catch(() => {
+        console.log('Score upload failed, but local save still worked.');
       });
     }
 
     function createChart(showDetails = false, useGreyscale = false) {
-      const values = parties.map(p => answer[p]);
+      if (!answer) return;
+
+      const values = parties.map(p => Number(answer[p]) || 0);
 
       const partyColours = [
         '#0087DC',
@@ -246,7 +278,9 @@
         '#F0F0F0'
       ];
 
-      if (chart) chart.destroy();
+      if (chart) {
+        chart.destroy();
+      }
 
       chart = new Chart(document.getElementById('compositionChart'), {
         type: 'pie',
@@ -270,183 +304,202 @@
       });
     }
 
-    updateUsernameDisplay();
-    updateScoreDisplay();
-
-    fetch('councils.json')
-      .then(res => res.json())
-      .then(data => {
-        allCouncils = data;
-
-        const now = new Date();
-        const today =
-          (now.getMonth() + 1).toString().padStart(2, '0') + '/' +
-          now.getDate().toString().padStart(2, '0') + '/' +
-          now.getFullYear();
-
-        const todaysCouncils = data.filter(entry => entry.Date === today);
-
-        if (todaysCouncils.length === 0) {
-          document.getElementById('clueText').textContent =
-            "No council found for today's date.";
-          return;
-        }
-
-        answer = todaysCouncils[Math.floor(Math.random() * todaysCouncils.length)];
-
-        // Start: greyscale pie, no labels, no numbers
-        createChart(false, true);
-      })
-      .catch(() => {
-        document.getElementById('clueText').textContent = "Error loading data.";
-      });
-
     function showSuggestions(text) {
       const box = document.getElementById('suggestionsBox');
-      if (!box) return;
-
       const query = text.trim().toLowerCase();
-      if (!query) {
-        box.style.display = 'none';
-        box.innerHTML = '';
+
+      if (!query || !allCouncils.length) {
+        hideSuggestions();
         return;
       }
 
       const matches = allCouncils
-        .filter(c => c.Council.toLowerCase().includes(query))
+        .filter(c => c.Council && c.Council.toLowerCase().includes(query))
         .slice(0, 20);
 
       if (!matches.length) {
-        box.style.display = 'none';
-        box.innerHTML = '';
+        hideSuggestions();
         return;
       }
 
-      box.innerHTML = matches.map(c =>
-        `<button type="button"
-                 class="list-group-item list-group-item-action"
-                 onclick="selectSuggestion('${c.Council.replace(/'/g, "\\'")}')">
-           ${c.Council}
-         </button>`
-      ).join('');
+      box.innerHTML = '';
+
+      matches.forEach(council => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'list-group-item list-group-item-action';
+        button.textContent = council.Council;
+        button.addEventListener('click', () => {
+          selectSuggestion(council.Council);
+        });
+        box.appendChild(button);
+      });
 
       box.style.display = 'block';
     }
 
     function selectSuggestion(name) {
       const input = document.getElementById('guessInput');
-      const box = document.getElementById('suggestionsBox');
-      if (input) input.value = name;
-      if (box) {
-        box.style.display = 'none';
-        box.innerHTML = '';
+      if (input) {
+        input.value = name;
+        input.focus();
       }
+      hideSuggestions();
     }
 
     function hideSuggestions() {
       const box = document.getElementById('suggestionsBox');
-      if (box) {
-        box.style.display = 'none';
-        box.innerHTML = '';
-      }
+      box.style.display = 'none';
+      box.innerHTML = '';
     }
 
-    function checkGuess() {
-      hideSuggestions();
+    function revealClues() {
+      const values = parties.map(p => Number(answer[p]) || 0);
 
-      const resultBox = document.getElementById('result');
-      const inputRaw = document.getElementById('guessInput').value.trim();
-      const input = inputRaw.toLowerCase();
-      const formattedInput =
-        inputRaw.charAt(0).toUpperCase() + inputRaw.slice(1);
-
-      if (!input) {
-        const warning = document.createElement('div');
-        warning.innerHTML = `Please enter a council name.`;
-        resultBox.appendChild(warning);
-        return;
-      }
-
-      if (!answer) {
-        const wait = document.createElement('div');
-        wait.innerHTML = `Still loading data...`;
-        resultBox.appendChild(wait);
-        return;
-      }
-
-      round += 1;
-      const values = parties.map(p => answer[p]);
-
-      // After guess 1: coloured pie only, no numbers/text
       if (round === 1) {
         createChart(false, false);
       }
 
-      // After guess 2: composition text and labelled coloured pie
       if (round === 2) {
-        document.getElementById('clueText').textContent =
-          `Composition: ${values.join(', ')}`;
+        document.getElementById('clueText').textContent = `Composition: ${values.join(', ')}`;
         createChart(true, false);
       }
 
-      // After guess 3: type clue
       if (round === 3) {
-        document.getElementById('typeText').textContent = `Type: ${answer.Type}`;
+        document.getElementById('typeText').textContent = `Type: ${answer.Type || ''}`;
       }
 
-      // After guess 4: spacing clue
       if (round === 4) {
-        document.getElementById('spacingText').textContent = `Spacing: ${answer.Spacing}`;
+        document.getElementById('spacingText').textContent = `Spacing: ${answer.Spacing || ''}`;
+      }
+    }
+
+    function checkGuess() {
+      if (gameFinished) return;
+
+      hideSuggestions();
+
+      const inputElement = document.getElementById('guessInput');
+      const inputRaw = inputElement.value.trim();
+      const input = inputRaw.toLowerCase();
+
+      if (!input) {
+        appendResult('Please enter a council name.');
+        return;
       }
 
-      if (input === answer.Council.toLowerCase()) {
-        const correct = document.createElement('div');
-        correct.innerHTML = `✅ <strong>${formattedInput}</strong> - Correct!`;
-        resultBox.appendChild(correct);
-
-        finalScore = round;
-        showUsernameSection();
+      if (!answer) {
+        appendResult('Still loading data...');
         return;
       }
 
       const guessed = allCouncils.find(
-        entry => entry.Council.toLowerCase() === input
+        entry => entry.Council && entry.Council.toLowerCase() === input
       );
 
       if (!guessed) {
-        const notFound = document.createElement('div');
-        notFound.innerHTML = `❌ <strong>${formattedInput}</strong> - Not found.`;
-        resultBox.appendChild(notFound);
+        appendResult(`❌ <strong>${inputRaw}</strong> - Not found.`);
+        return;
+      }
+
+      round += 1;
+      revealClues();
+
+      if (input === answer.Council.toLowerCase()) {
+        appendResult(`✅ <strong>${inputRaw}</strong> - Correct!`);
+        finalScore = round;
+        lockGame();
+        showUsernameSection();
         return;
       }
 
       const distance = haversineDistance(
-        guessed.Lat,
-        guessed.Long,
-        answer.Lat,
-        answer.Long
+        Number(guessed.Lat),
+        Number(guessed.Long),
+        Number(answer.Lat),
+        Number(answer.Long)
       ).toFixed(0);
+
       const direction = getDirection(
-        guessed.Lat,
-        guessed.Long,
-        answer.Lat,
-        answer.Long
+        Number(guessed.Lat),
+        Number(guessed.Long),
+        Number(answer.Lat),
+        Number(answer.Long)
       );
 
-      const feedback = document.createElement('div');
-      feedback.innerHTML =
-        `❌ <strong>${formattedInput}</strong> - ${distance} miles away ${direction}`;
-      resultBox.appendChild(feedback);
+      appendResult(`❌ <strong>${inputRaw}</strong> - ${distance} miles away ${direction}`);
 
       if (round >= 6) {
-        const gameOver = document.createElement('div');
-        gameOver.innerHTML = `🚫 GAME OVER. You've been Unitarised`;
-        resultBox.appendChild(gameOver);
-
+        appendResult(`🚫 GAME OVER. You've been Unitarised.`);
         finalScore = 'X';
+        lockGame();
         showUsernameSection();
       }
+
+      inputElement.value = '';
     }
+
+    function initGame(data) {
+      allCouncils = data;
+
+      const now = new Date();
+      const today =
+        String(now.getMonth() + 1).padStart(2, '0') + '/' +
+        String(now.getDate()).padStart(2, '0') + '/' +
+        now.getFullYear();
+
+      const todaysCouncils = data.filter(entry => entry.Date === today);
+
+      if (!todaysCouncils.length) {
+        document.getElementById('clueText').textContent = "No council found for today's date.";
+        return;
+      }
+
+      answer = todaysCouncils[Math.floor(Math.random() * todaysCouncils.length)];
+      createChart(false, true);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      updateUsernameDisplay();
+      updateScoreDisplay();
+
+      const guessInput = document.getElementById('guessInput');
+      const submitButton = document.getElementById('submitButton');
+      const saveScoreButton = document.getElementById('saveScoreButton');
+
+      guessInput.addEventListener('input', e => {
+        showSuggestions(e.target.value);
+      });
+
+      guessInput.addEventListener('keydown', e => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          checkGuess();
+        }
+      });
+
+      submitButton.addEventListener('click', checkGuess);
+      saveScoreButton.addEventListener('click', submitUsername);
+
+      document.addEventListener('click', e => {
+        const inputWrapper = document.querySelector('.position-relative');
+        if (inputWrapper && !inputWrapper.contains(e.target)) {
+          hideSuggestions();
+        }
+      });
+
+      fetch('councils.json')
+        .then(res => {
+          if (!res.ok) {
+            throw new Error('Failed to load councils.json');
+          }
+          return res.json();
+        })
+        .then(initGame)
+        .catch(() => {
+          document.getElementById('clueText').textContent = 'Error loading data.';
+        });
+    });
   </script>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
