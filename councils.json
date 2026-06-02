@@ -5966,21 +5966,5 @@
     "Type": "sui generis",
     "Spacing": "_____ __ ______",
     "Date": "6/8/27"
-  },
-  {
-    "Council": "Council",
-    "Con": "Con",
-    "Lab": "Lab",
-    "LibDem": "LibDem",
-    "Green": "Green",
-    "Reform": "Reform",
-    "SNP": "SNP",
-    "Plaid": "Plaid",
-    "Other": "Other",
-    "Long": "Long",
-    "Lat": "Lat",
-    "Type": "Type",
-    "Spacing": "Spacing",
-    "Date": "Date"
   }
 ]
